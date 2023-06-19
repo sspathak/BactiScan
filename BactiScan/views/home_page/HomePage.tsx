@@ -1,19 +1,38 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import ScanList from './ScanList';
+import {useNavigation, NavigationProp} from '@react-navigation/native';
 
-const HomeScreen = () => {
+type RootStackParamList = {
+  Home: undefined;
+  Settings: undefined;
+  Search: undefined;
+};
+
+type HomePageNavigationProp = NavigationProp<RootStackParamList, 'Home'>;
+
+const HomePage = () => {
+  const navigation = useNavigation<HomePageNavigationProp>();
+
+  const goToSettings = () => {
+    navigation.navigate('Settings');
+  };
+
+  const goToSearch = () => {
+    navigation.navigate('Search');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={goToSettings}>
           <Image
             source={require('../../assets/settings-icon.png')}
             style={styles.iconImage}
           />
         </TouchableOpacity>
         <Text style={styles.title}>My Scans</Text>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={goToSearch}>
           <Image
             source={require('../../assets/search-icon.png')}
             style={styles.iconImage}
@@ -101,7 +120,7 @@ const styles = StyleSheet.create({
   iconImage: {
     height: 40,
     width: 40,
-  }
+  },
 });
 
-export default HomeScreen;
+export default HomePage;

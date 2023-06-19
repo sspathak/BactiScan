@@ -10,33 +10,25 @@ type RootStackParamList = {
   Filter: undefined;
 };
 
-type SearchPageNavigationProp = NavigationProp<RootStackParamList, 'Search'>;
+type FilterPageNavigationProp = NavigationProp<RootStackParamList, 'Filter'>;
 
-const SearchPage = () => {
-  const navigation = useNavigation<SearchPageNavigationProp>();
-  const goToHome = () => {
-    navigation.navigate('Home');
-  };
-  const goToFilter = () => {
-    // todo - navigate to filter page
-    navigation.navigate('Filter');
+const FilterPage = () => {
+  const navigation = useNavigation<FilterPageNavigationProp>();
+
+  const goToSearch = () => {
+    navigation.navigate('Search');
   };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={goToHome}>
+        <TouchableOpacity style={styles.iconButton} onPress={goToSearch}>
           <Image
-            source={require('../../assets/home-icon.png')}
+            source={require('../../assets/search-icon.png')}
             style={styles.iconImage}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>Search</Text>
-        <TouchableOpacity style={styles.iconButton} onPress={goToFilter}>
-          <Image
-            source={require('../../assets/filter-icon.png')}
-            style={styles.iconImage}
-          />
-        </TouchableOpacity>
+        <Text style={styles.title}>Filter</Text>
+        <View style={styles.emptyBox}></View>
       </View>
       <View style={styles.content}>
         {/* Render the list of scan items here */}
@@ -107,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchPage;
+export default FilterPage;

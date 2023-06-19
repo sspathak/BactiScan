@@ -8,11 +8,12 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
+  Text, TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -24,7 +25,17 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import HomePage from './views/home_page/HomePage';
+import SettingsPage from './views/settings_page/SettingsPage';
+import SearchPage from './views/search_page/SearchPage';
+import FilterPage from './views/search_page/FilterPage';
+// import ScanPage from './views/scan_page/ScanPage';
+// import CameraPage from './views/camera_page/CameraPage';
+// import GalleryPage from './views/gallery_page/GalleryPage';
+
+const Stack = createStackNavigator();
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -63,8 +74,26 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  // const navigation = useNavigation();
+
   return (
-    <HomePage />
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="Home" component={HomePage} />
+        <Stack.Screen name="Settings" component={SettingsPage} />
+        <Stack.Screen name="Search" component={SearchPage} />
+        <Stack.Screen name="Filter" component={FilterPage} />
+        {/*<Stack.Screen name="Scan" component={ScanPage} />*/}
+        {/*<Stack.Screen name="Camera" component={CameraPage} />*/}
+        {/*<Stack.Screen name="Gallery" component={GalleryPage} />*/}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+  // return (
+  //   <HomePage />
     // <SafeAreaView style={backgroundStyle}>
     //   <StatusBar
     //     barStyle={isDarkMode ? 'light-content' : 'dark-content'}
@@ -95,7 +124,7 @@ function App(): JSX.Element {
     //     </View>
     //   </ScrollView>
     // </SafeAreaView>
-  );
+  // );
 }
 
 const styles = StyleSheet.create({
@@ -114,6 +143,13 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  iconButton: {
+    marginLeft: 10,
+  },
+  iconImage: {
+    height: 40,
+    width: 40,
   },
 });
 

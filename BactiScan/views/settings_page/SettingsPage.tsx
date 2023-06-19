@@ -1,48 +1,40 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import ScanList from "../home_page/ScanList";
+import ScanList from '../home_page/ScanList';
+import {useNavigation, NavigationProp} from '@react-navigation/native';
+
+type RootStackParamList = {
+  Home: undefined;
+  Settings: undefined;
+};
+
+type SettingsPageNavigationProp = NavigationProp<
+  RootStackParamList,
+  'Settings'
+>;
 
 const SettingsPage = () => {
+  const navigation = useNavigation<SettingsPageNavigationProp>();
+
+  const goToHome = () => {
+    navigation.navigate('Home');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={goToHome}>
           <Image
             source={require('../../assets/home-icon.png')}
             style={styles.iconImage}
           />
         </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
-        {/*<TouchableOpacity style={styles.iconButton}>*/}
-        {/*  <Image*/}
-        {/*    source={require('../../assets/search-icon.png')}*/}
-        {/*    style={styles.iconImage}*/}
-        {/*  />*/}
-        {/*</TouchableOpacity>*/}
+        <View style={styles.emptyBox}></View>
       </View>
       <View style={styles.content}>
         {/* Render the list of scan items here */}
         <ScanList />
       </View>
-      {/*<View style={styles.bottomBar}>*/}
-      {/*  <View style={styles.buttonContainerBorder}>*/}
-      {/*    <View style={styles.buttonContainer}>*/}
-      {/*      <TouchableOpacity style={styles.iconButton}>*/}
-      {/*        <Image*/}
-      {/*          source={require('../../assets/camera-icon.png')}*/}
-      {/*          style={styles.iconImage}*/}
-      {/*        />*/}
-      {/*      </TouchableOpacity>*/}
-      {/*      <View style={styles.separator} />*/}
-      {/*      <TouchableOpacity style={styles.iconButton}>*/}
-      {/*        <Image*/}
-      {/*          source={require('../../assets/gallery-icon.png')}*/}
-      {/*          style={styles.iconImage}*/}
-      {/*        />*/}
-      {/*      </TouchableOpacity>*/}
-      {/*    </View>*/}
-      {/*  </View>*/}
-      {/*</View>*/}
     </View>
   );
 };
@@ -101,7 +93,11 @@ const styles = StyleSheet.create({
   iconImage: {
     height: 40,
     width: 40,
-  }
+  },
+  emptyBox: {
+    height: 40,
+    width: 40,
+  },
 });
 
-export default HomeScreen;
+export default SettingsPage;
