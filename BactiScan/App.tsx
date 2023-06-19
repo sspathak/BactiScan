@@ -34,6 +34,7 @@ import FilterPage from './views/search_page/FilterPage';
 // import ScanPage from './views/scan_page/ScanPage';
 // import CameraPage from './views/camera_page/CameraPage';
 // import GalleryPage from './views/gallery_page/GalleryPage';
+import {verticalAnimation} from './views/CommonStyles';
 
 const Stack = createStackNavigator();
 
@@ -85,7 +86,7 @@ function App(): JSX.Element {
         <Stack.Screen name="Home" component={HomePage} />
         <Stack.Screen name="Settings" component={SettingsPage} />
         <Stack.Screen name="Search" component={SearchPage} />
-        <Stack.Screen name="Filter" component={FilterPage} />
+        <Stack.Screen name="Filter" component={FilterPage} options={verticalAnimation}/>
         {/*<Stack.Screen name="Scan" component={ScanPage} />*/}
         {/*<Stack.Screen name="Camera" component={CameraPage} />*/}
         {/*<Stack.Screen name="Gallery" component={GalleryPage} />*/}
