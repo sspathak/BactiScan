@@ -8,6 +8,8 @@ type RootStackParamList = {
   Home: undefined;
   Settings: undefined;
   Search: undefined;
+  Camera: undefined;
+  Gallery: undefined;
 };
 
 type HomePageNavigationProp = NavigationProp<RootStackParamList, 'Home'>;
@@ -21,6 +23,14 @@ const HomePage = () => {
 
   const goToSearch = () => {
     navigation.navigate('Search');
+  };
+
+  const goToCamera = () => {
+    navigation.navigate('Camera');
+  };
+
+  const goToGallery = () => {
+    navigation.navigate('Gallery');
   };
 
   return (
@@ -47,14 +57,14 @@ const HomePage = () => {
       <View style={commonStyles.bottomBar}>
         <View style={commonStyles.buttonContainerBorder}>
           <View style={commonStyles.buttonContainer}>
-            <TouchableOpacity style={commonStyles.iconButton}>
+            <TouchableOpacity style={commonStyles.iconButton} onPress={goToCamera}>
               <Image
                 source={require('../../assets/camera-icon.png')}
                 style={commonStyles.iconImage}
               />
             </TouchableOpacity>
             <View style={commonStyles.separator} />
-            <TouchableOpacity style={commonStyles.iconButton}>
+            <TouchableOpacity style={commonStyles.iconButton} onPress={goToGallery}>
               <Image
                 source={require('../../assets/gallery-icon.png')}
                 style={commonStyles.iconImage}
