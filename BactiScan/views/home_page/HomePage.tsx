@@ -23,17 +23,20 @@ const HomePage = () => {
 
   const loadSavedData = async () => {
     try {
-      const imagesDirPath = `${RNFS.DocumentDirectoryPath}/images`;
-      const imageDirs = await RNFS.readDir(imagesDirPath);
+      const imagesDirPath = `images`;
+      const imageDirs = await RNFS.readDir(
+        `${RNFS.DocumentDirectoryPath}/${imagesDirPath}`,
+      );
 
       const newData = await Promise.all(
         imageDirs.map(async imageDir => {
+          console.warn(`imageDir.path: ${imageDir.path}`)
           const metadataPath = `${imageDir.path}/metadata.json`;
           const metadataContents = await RNFS.readFile(metadataPath);
           const metadata = JSON.parse(metadataContents);
 
           return {
-            thumbnail: {uri: metadata.path},
+            thumbnail: {uri: `${imageDir.path}/${metadata.path}`},
             metadata: {
               title: `Scan ${metadata.timestamp}`,
               date: '2021-11-01',

@@ -121,12 +121,22 @@ export function MediaPage({navigation, route}: Props): React.ReactElement {
   const acceptHome = async () => {
     try {
       // Create a unique directory for each image
-      const imageDirPath = `${RNFS.DocumentDirectoryPath}/images/${Date.now()}`;
-      await RNFS.mkdir(imageDirPath);
+      const imageDirPath = `images/${Date.now()}`;
+      console.warn(
+        'creating directory ' + `${RNFS.DocumentDirectoryPath}/${imageDirPath}`,
+      );
+      await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${imageDirPath}`);
 
       // Save the image to the directory
-      const imagePath = `${imageDirPath}/image.jpg`;
-      await RNFS.moveFile(path, imagePath);
+      const imagePath = 'image.jpg';
+      console.warn(
+        'path: ',
+        `${RNFS.DocumentDirectoryPath}/${imageDirPath}/${imagePath}`,
+      );
+      await RNFS.moveFile(
+        path,
+        `${RNFS.DocumentDirectoryPath}/${imageDirPath}/${imagePath}`,
+      );
 
       // Save the metadata to a separate file
       const metadataPath = `${imageDirPath}/metadata.json`;
@@ -135,8 +145,11 @@ export function MediaPage({navigation, route}: Props): React.ReactElement {
         type: type,
         timestamp: Date.now(),
       });
-      await RNFS.writeFile(metadataPath, metadata);
-      console.log('Saved metadata to', metadataPath);
+      await RNFS.writeFile(`${RNFS.DocumentDirectoryPath}/${metadataPath}`, metadata);
+      console.log(
+        'Saved metadata to',
+        `${RNFS.DocumentDirectoryPath}/${metadataPath}`,
+      );
       // Navigate to the home page
       navigation.navigate('Home');
     } catch (error) {
