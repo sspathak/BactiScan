@@ -3,19 +3,14 @@ import {View, Text, TouchableOpacity, Image} from 'react-native';
 import ScanList from '../home_page/ScanList';
 import {useNavigation, NavigationProp} from '@react-navigation/native';
 import commonStyles from '../CommonStyles';
+// import TakePhotoView from "./TakePhotoView";
+import TakeScanView from './TakeScanView';
+import type {Routes} from '../Routes';
 
-type RootStackParamList = {
-  Home: undefined;
-  Settings: undefined;
-  Search: undefined;
-  Filter: undefined;
-  Camera: undefined;
-};
-
-type CameraPageNavigationProp = NavigationProp<RootStackParamList, 'Camera'>;
+type Props = NavigationProp<Routes, 'Camera'>;
 
 const CameraPage = () => {
-  const navigation = useNavigation<CameraPageNavigationProp>();
+  const navigation = useNavigation<Props>();
   const backToHome = () => {
     navigation.navigate('Home');
   };
@@ -34,7 +29,9 @@ const CameraPage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        <ScanList />
+        {/*<ScanList />*/}
+        {/*<TakePhotoView />*/}
+        <TakeScanView navigation={navigation} route={navigation} />
       </View>
     </View>
   );

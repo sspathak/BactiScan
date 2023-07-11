@@ -1,45 +1,23 @@
 import React from 'react';
-import {Text, ScrollView} from 'react-native';
+import {Text, ScrollView, View} from 'react-native';
+import {FlatList} from 'react-native';
+import ScanListItem from './ScanListItem';
 
-const ScanList = () => {
+
+interface ScanListProps {
+  default_scan_list_data: boolean;
+}
+
+const ScanList = ({data}) => {
   return (
-    <ScrollView>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-      <Text>This is a placeholder for the ScanList component.</Text>
-    </ScrollView>
+    <FlatList
+      data={data}
+      renderItem={({item}) => (
+        <ScanListItem thumbnail={item.thumbnail} metadata={item.metadata} />
+      )}
+      keyExtractor={item => item.id}
+      // Add sorting and other list configuration as needed
+    />
   );
 };
 

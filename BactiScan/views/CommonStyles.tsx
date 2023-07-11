@@ -120,6 +120,23 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
   },
+  scanImage: {
+    flex: 1,
+  },
+  metadataContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'lightgray',
+  },
+  metadataTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  metadataText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
 });
 
 export default styles;

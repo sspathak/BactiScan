@@ -1,21 +1,53 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import ScanList from './ScanList';
 import {useNavigation, NavigationProp} from '@react-navigation/native';
 import commonStyles from '../CommonStyles';
+import type {Routes} from '../Routes';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import RNFS from 'react-native-fs';
+import {useIsFocused} from '@react-navigation/core';
+// import MyInlineWeb from './CustomWebview';
 
-type RootStackParamList = {
-  Home: undefined;
-  Settings: undefined;
-  Search: undefined;
-  Camera: undefined;
-  Gallery: undefined;
-};
-
-type HomePageNavigationProp = NavigationProp<RootStackParamList, 'Home'>;
+type Props = NavigationProp<Routes, 'Home'>;
 
 const HomePage = () => {
-  const navigation = useNavigation<HomePageNavigationProp>();
+  const navigation = useNavigation<Props>();
+  const [scanData, setScanData] = useState([]);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      loadSavedData();
+    }
+  }, [isFocused]);
+
+  const loadSavedData = async () => {
+    try {
+      const imagesDirPath = `${RNFS.DocumentDirectoryPath}/images`;
+      const imageDirs = await RNFS.readDir(imagesDirPath);
+
+      const newData = await Promise.all(
+        imageDirs.map(async imageDir => {
+          const metadataPath = `${imageDir.path}/metadata.json`;
+          const metadataContents = await RNFS.readFile(metadataPath);
+          const metadata = JSON.parse(metadataContents);
+
+          return {
+            thumbnail: {uri: metadata.path},
+            metadata: {
+              title: `Scan ${metadata.timestamp}`,
+              date: '2021-11-01',
+              time: '12:00',
+            },
+          };
+        }),
+      );
+
+      setScanData(newData);
+    } catch (error) {
+      console.log('Failed to load saved data:', error);
+    }
+  };
 
   const goToSettings = () => {
     navigation.navigate('Settings');
@@ -36,38 +68,36 @@ const HomePage = () => {
   return (
     <View style={commonStyles.container}>
       <View style={commonStyles.header}>
-        <TouchableOpacity style={commonStyles.iconButton} onPress={goToSettings}>
-          <Image
-            source={require('../../assets/settings-icon.png')}
-            style={commonStyles.iconImage}
-          />
+        <TouchableOpacity
+          style={commonStyles.iconButton}
+          onPress={goToSettings}>
+          <IonIcon name="settings-outline" size={32} />
         </TouchableOpacity>
-        <Text style={commonStyles.title}>My Scans</Text>
+        <Text style={commonStyles.title}>BactiScan</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToSearch}>
-          <Image
-            source={require('../../assets/search-icon.png')}
-            style={commonStyles.iconImage}
-          />
+          <IonIcon name="search-outline" size={32} />
         </TouchableOpacity>
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        <ScanList />
+        <ScanList data={scanData} />
       </View>
       <View style={commonStyles.bottomBar}>
         <View style={commonStyles.buttonContainerBorder}>
           <View style={commonStyles.buttonContainer}>
-            <TouchableOpacity style={commonStyles.iconButton} onPress={goToCamera}>
-              <Image
-                source={require('../../assets/camera-icon.png')}
-                style={commonStyles.iconImage}
-              />
+            <TouchableOpacity
+              style={commonStyles.iconButton}
+              onPress={goToCamera}>
+              <IonIcon name="camera-outline" size={32} />
             </TouchableOpacity>
             <View style={commonStyles.separator} />
-            <TouchableOpacity style={commonStyles.iconButton} onPress={goToGallery}>
-              <Image
-                source={require('../../assets/gallery-icon.png')}
-                style={commonStyles.iconImage}
+            <TouchableOpacity
+              style={commonStyles.iconButton}
+              onPress={goToGallery}>
+              <IonIcon
+                name="image-outline"
+                size={32}
+                style={{paddingRight: 10}}
               />
             </TouchableOpacity>
           </View>
