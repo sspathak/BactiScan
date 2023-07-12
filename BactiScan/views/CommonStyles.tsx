@@ -14,10 +14,7 @@ export const horizontalAnimation: StackNavigationOptions = {
     close: TransitionSpecs.TransitionIOSSpec,
   },
   headerStyleInterpolator: HeaderStyleInterpolators.forFade,
-  cardStyleInterpolator: ({
-                            current,
-                            layouts,
-                          }: StackCardInterpolationProps) => {
+  cardStyleInterpolator: ({current, layouts}: StackCardInterpolationProps) => {
     return {
       cardStyle: {
         transform: [
@@ -40,10 +37,7 @@ export const verticalAnimation: StackNavigationOptions = {
     close: TransitionSpecs.TransitionIOSSpec,
   },
   headerStyleInterpolator: HeaderStyleInterpolators.forSlideUp,
-  cardStyleInterpolator: ({
-                            current,
-                            layouts,
-                          }: StackCardInterpolationProps) => {
+  cardStyleInterpolator: ({current, layouts}: StackCardInterpolationProps) => {
     return {
       cardStyle: {
         transform: [
