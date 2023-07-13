@@ -7,6 +7,7 @@ import type {Routes} from '../Routes';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import RNFS from 'react-native-fs';
 import {useIsFocused} from '@react-navigation/core';
+import CustomWebView from '../imagej_webview/CustomWebView';
 // import MyInlineWeb from './CustomWebview';
 
 type Props = NavigationProp<Routes, 'Home'>;
@@ -20,6 +21,12 @@ const HomePage = () => {
       loadSavedData();
     }
   }, [isFocused]);
+
+  // RNFS.writeFile(
+  //   `${RNFS.DocumentDirectoryPath}/test.txt`,
+  //   'Lorem ipsum dolor sit amet',
+  //   'utf8',
+  // ).then(r => console.log('writeFile result:', r));
 
   const loadSavedData = async () => {
     try {
@@ -83,7 +90,8 @@ const HomePage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        <ScanList data={scanData} />
+        {/*<ScanList data={scanData} />*/}
+        <CustomWebView />
       </View>
       <View style={commonStyles.bottomBar}>
         <View style={commonStyles.buttonContainerBorder}>
