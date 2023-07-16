@@ -90,8 +90,8 @@ const HomePage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        {/*<ScanList data={scanData} />*/}
-        <CustomWebView />
+        <ScanList data={scanData} />
+        {/*<CustomWebView />*/}
       </View>
       <View style={commonStyles.bottomBar}>
         <View style={commonStyles.buttonContainerBorder}>

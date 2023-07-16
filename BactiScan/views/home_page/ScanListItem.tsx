@@ -3,6 +3,7 @@ import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import commonStyles from '../CommonStyles';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import type {Routes} from '../Routes';
+import CustomWebView from "../imagej_webview/CustomWebView";
 
 type Props = NavigationProp<Routes, 'ScanListItem'>;
 
@@ -31,6 +32,7 @@ const ScanListItem = ({thumbnail, metadata}) => {
         </View>
       </TouchableOpacity>
     </View>
+
   );
 };
 

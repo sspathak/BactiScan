@@ -39,6 +39,7 @@ import {verticalAnimation} from './views/CommonStyles';
 import {Routes} from './views/Routes';
 import ScanViewer from './views/scan_viewer/ScanViewer';
 
+// const fs = require('fs-extra')
 const Stack = createStackNavigator<Routes>();
 
 type SectionProps = PropsWithChildren<{
