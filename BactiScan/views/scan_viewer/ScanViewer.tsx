@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  StyleSheet,
+  StyleSheet, Button,
 } from 'react-native';
 import {useNavigation, NavigationProp} from '@react-navigation/native';
 import {SliderBox} from 'react-native-image-slider-box';
@@ -113,28 +113,28 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
     let scanFolderPath = thumbnail.uri;
     let file_path = `${scanFolderPath.split('/').slice(0, -1).join('/')}/3.png`;
     let file_exists = await RNFS.exists(file_path);
-    // if (file_exists) {
-    //   console.warn('File exists');
-    //   try {
-    //     console.warn("Trying to read folder :'" + `${scanFolderPath.split('/').slice(0, -1).join('/')}` + "'");
-    //     const files = await RNFS.readDir(
-    //       `${scanFolderPath.split('/').slice(0, -1).join('/')}`,
-    //     );
-    //     const imageFiles = files
-    //       .filter(file => file.isFile() && (file.name.endsWith('.png') || file.name.endsWith('.jpg')))
-    //       .map(
-    //         file =>
-    //           `${scanFolderPath.split('/').slice(0, -1).join('/')}/${
-    //             file.name
-    //           }`,
-    //       );
-    //     setResultImages(imageFiles);
-    //     return imageFiles;
-    //   } catch (error) {
-    //     console.error('Error while scanning folder:', error);
-    //     return [];
-    //   }
-    // }
+    if (file_exists) {
+      console.warn('File exists');
+      try {
+        console.warn("Trying to read folder :'" + `${scanFolderPath.split('/').slice(0, -1).join('/')}` + "'");
+        const files = await RNFS.readDir(
+          `${scanFolderPath.split('/').slice(0, -1).join('/')}`,
+        );
+        const imageFiles = files
+          .filter(file => file.isFile() && (file.name.endsWith('.png') || file.name.endsWith('.jpg')))
+          .map(
+            file =>
+              `${scanFolderPath.split('/').slice(0, -1).join('/')}/${
+                file.name
+              }`,
+          );
+        setResultImages(imageFiles);
+        return imageFiles;
+      } catch (error) {
+        console.error('Error while scanning folder:', error);
+        return [];
+      }
+    }
     // else {
     //   // CustomWebView(thumbnail.uri);
     //   console.warn(`File ${file_path} does not exist. Making request to server`);
@@ -229,10 +229,17 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
     //   });
     // }
   };
-
+  useEffect(() => {
+    if (!results_ready) {
+      getParticleCountData().then(() => {
+        setResultsReady(true);
+        // setIsVisible(true);
+      });
+    }
+  }, []);
   // if (!results_ready) {
   //   getParticleCountData().then(() => {
-  //     setResultsReady(true);
+  //     // setResultsReady(true);
   //     // setIsVisible(true);
   //   });
   // }
@@ -317,7 +324,19 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
         </View>
       </View>
       {/*<CustomWebView  />*/}
-      <CustomWebView source_image_path={thumbnail.uri} />
+      {!results_ready ? (
+        <CustomWebView
+          source_image_path={thumbnail.uri}
+          setParticleCount={setParticleCount}
+          results_ready={results_ready}
+          setResultsReady={setResultsReady}
+        />
+      ) : (
+        <Button
+          title="Redo Particle Count"
+          onPress={() => setResultsReady(false)}
+        />
+      )}
       <View style={commonStyles.bottomBar}>
         <View style={commonStyles.buttonContainerBorder}>
           <View style={commonStyles.buttonContainer}>
