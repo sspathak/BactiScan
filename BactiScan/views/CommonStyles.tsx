@@ -56,7 +56,7 @@ export const verticalAnimation: StackNavigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     marginTop: 20,
   },
   header: {

@@ -34,6 +34,7 @@ import FilterPage from './views/search_page/FilterPage';
 // import ScanPage from './views/scan_page/ScanPage';
 import MediaPage from './views/camera_page/MediaPage';
 import CameraPage from './views/camera_page/CameraPage';
+import ImagePicker from './views/gallery_page/ImagePicker';
 import GalleryPage from './views/gallery_page/GalleryPage';
 import {verticalAnimation} from './views/CommonStyles';
 import {Routes} from './views/Routes';
@@ -41,7 +42,6 @@ import ScanViewer from './views/scan_viewer/ScanViewer';
 
 // const fs = require('fs-extra')
 const Stack = createStackNavigator<Routes>();
-
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -79,12 +79,13 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+
   // const navigation = useNavigation();
 
   return (
 
     <NavigationContainer>
-      <StatusBar barStyle={'dark-content'} />
+      <StatusBar barStyle={'dark-content'} translucent={true}/>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -105,7 +106,7 @@ function App(): JSX.Element {
         />
         <Stack.Screen
           name="Gallery"
-          component={GalleryPage}
+          component={ImagePicker}
           options={verticalAnimation}
         />
         <Stack.Screen name="MediaPage" component={MediaPage} />

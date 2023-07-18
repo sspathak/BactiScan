@@ -21,15 +21,29 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {transform} from '@babel/core';
 import styles from '../CommonStyles';
 import CustomWebView from '../imagej_webview/CustomWebView';
+import EditParametersModal from "./EditParametersModal";
 
 type Props = NativeStackScreenProps<Routes, 'ScanViewer'>;
 export function ScanViewer({navigation, route}: Props): React.ReactElement {
   const {thumbnail, metadata} = route.params;
   const [result_images, setResultImages] = useState<string[]>([]);
-  const [particle_count, setParticleCount] = useState(0);
+  const [particle_count, setParticleCount] = useState('Unknown');
   const [results_ready, setResultsReady] = useState(true);
   const [visible, setIsVisible] = useState(false);
   const [viewing_image, setViewingImage] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [lower_threshold, setLowerThreshold] = useState(5);
+  const [upper_threshold, setUpperThreshold] = useState(100);
+  const [lower_particle_size, setLowerParticleSize] = useState(5);
+  const [upper_particle_size, setUpperParticleSize] = useState(100);
+  // In the future version we will use something else to store the parameters sp that they stay the same  even on different pages
+  // this can be done by using a global state as follows in the HomePage.tsx file
+  // const [lower_threshold, setLowerThreshold] = useState(5);
+  // and then to access it in this file we can use the following
+  // const {lower_threshold} = useGlobalState();
+  // and then we can use the lower_threshold variable in the code below
+  // eg print the value of lower_threshold
+  // console.log(lower_threshold);
   const goBack = () => {
     navigation.goBack();
   };
@@ -39,7 +53,6 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
     particle_size_min: 5,
     particle_size_max: 100,
   };
-
 
   const exportToGallery = async () => {
     try {
@@ -55,6 +68,24 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
         'Export failed',
         'An error occurred while exporting the image',
       );
+    }
+  };
+
+  const updateParticleCountValue = async () => {
+    let file_path = `${thumbnail.uri
+      .split('/')
+      .slice(0, -1)
+      .join('/')}/metadata.json`;
+    let file_exists = await RNFS.exists(file_path);
+    if (file_exists) {
+      console.warn('metadata.json exists');
+      try {
+        const metadataContents = await RNFS.readFile(file_path);
+        const metadata = JSON.parse(metadataContents);
+        setParticleCount(metadata.particle_count);
+      } catch (error) {
+        console.warn('Error reading metadata.json: ' + error);
+      }
     }
   };
   const getParticleCountData = async () => {
@@ -86,6 +117,7 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
               }`,
           );
         setResultImages(imageFiles);
+        await updateParticleCountValue();
         return imageFiles;
       } catch (error) {
         console.error('Error while scanning folder:', error);
@@ -127,6 +159,10 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
     getParticleCountData();
   }, []);
 
+  const edit_trigger = () => {
+    setModalVisible(true);
+  }
+
   return (
     <View style={commonStyles.container}>
       <View style={commonStyles.header}>
@@ -145,37 +181,61 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
           results_ready={results_ready}
           setResultsReady={setResultsReady}
           getParticleCountData={getParticleCountData}
+          lower_threshold={lower_threshold}
+          upper_threshold={upper_threshold}
+          lower_particle_size={lower_particle_size}
+          upper_particle_size={upper_particle_size}
         />
       ) : (
-        // <Button
-        //   title="Redo Particle Count"
-        //   onPress={() => setResultsReady(false)}
-        // />
-
-        <View style={commonStyles.content}>
-          <SliderBox
-            images={result_images}
-            // style={styles_display_image.image}
-            onCurrentImagePressed={(index: number) => {
-              setViewingImage(index);
-              if (results_ready) {
-                setIsVisible(true);
-              }
-            }}
-            sliderBoxHeight={600}
-          />
-          <ImageView
-            images={result_images.map(uri => ({uri}))}
-            imageIndex={viewing_image}
-            onRequestClose={() => setIsVisible(false)}
-            visible={visible}
-          />
-        </View>
+        <>
+          <View>
+            <EditParametersModal
+              modalVisible={modalVisible}
+              setModalVisible={setModalVisible}
+              setLowerThreshold={setLowerThreshold}
+              setUpperThreshold={setUpperThreshold}
+              setLowerParticleSize={setLowerParticleSize}
+              setUpperParticleSize={setUpperParticleSize}
+              setResultsReady={setResultsReady}
+              lower_threshold={lower_threshold}
+              upper_threshold={upper_threshold}
+              lower_particle_size={lower_particle_size}
+              upper_particle_size={upper_particle_size}
+            />
+            <Button
+              title="Change parameters"
+              onPress={() => setModalVisible(true)}
+            />
+          </View>
+          <View style={{transform: [{scale: 0.95}]}}>
+            <SliderBox
+              images={result_images}
+              // style={styles_display_image.image}
+              onCurrentImagePressed={(index: number) => {
+                setViewingImage(index);
+                if (results_ready) {
+                  setIsVisible(true);
+                }
+              }}
+              sliderBoxHeight={400}
+            />
+            <ImageView
+              images={result_images.map(uri => ({uri}))}
+              imageIndex={viewing_image}
+              onRequestClose={() => setIsVisible(false)}
+              visible={visible}
+            />
+          </View>
+        </>
       )}
       <View style={commonStyles.metadataContainer}>
         <Text style={commonStyles.metadataTitle}>{metadata.title}</Text>
         <Text style={commonStyles.metadataText}>Date: {metadata.date}</Text>
         <Text style={commonStyles.metadataText}>Time: {metadata.time}</Text>
+        <Text style={commonStyles.metadataText}>
+          Particle Count:{' '}
+          {metadata.particle_count ? metadata.particle_count : particle_count}
+        </Text>
       </View>
 
       <View style={commonStyles.bottomBar}>

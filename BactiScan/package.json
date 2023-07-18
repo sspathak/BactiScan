@@ -24,6 +24,7 @@
     "react-native": "0.71.11",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.12.0",
+    "react-native-image-picker": "^5.6.0",
     "react-native-image-slider-box": "^2.0.7",
     "react-native-image-viewing": "^0.2.2",
     "react-native-local-resource": "^0.1.6",

@@ -157,9 +157,11 @@ async function get_image_n(n) {
   return JSON.stringify({status: 'success'});
 }
 
-function apply_threshold() {
+function apply_threshold(_args) {
+  args = JSON.parse(_args);
   console.log('APPLYING THRESHOLD');
   ij.runMacro(\`setAutoThreshold("Default");
+ setThreshold(\${args[0]}, \${args[1]});
 setOption("BlackBackground", false);
 \`);
   return JSON.stringify({status: 'success'});
@@ -172,9 +174,10 @@ function apply_mask() {
   return JSON.stringify({status: 'success'});
 }
 
-function analyze_particles() {
+function analyze_particles(_args) {
+  args = JSON.parse(_args);
   console.log('ANALYZING PARTICLES');
-  ij.runMacro(\`run("Analyze Particles...", "size=500-Infinity show=Overlay summarize");
+  ij.runMacro(\`run("Analyze Particles...", "size=\${args[0]}-\${args[1]} show=Overlay summarize");
 \`);
   return JSON.stringify({status: 'success'});
 }
@@ -292,6 +295,10 @@ const CustomWebView = ({
                          results_ready,
                          setResultsReady,
   getParticleCountData,
+  lower_threshold,
+  upper_threshold,
+  lower_particle_size,
+  upper_particle_size,
                        }) => {
   console.warn('source_image_path: ', source_image_path);
   const webviewRef = useRef<WebView | null>(null);
@@ -362,7 +369,10 @@ const CustomWebView = ({
   const send_ApplyThreshold = async () => {
     console.warn('send_ApplyThreshold');
     webviewRef.current?.postMessage(
-      JSON.stringify({fn_name: 'apply_threshold', args: ''}),
+      JSON.stringify({
+        fn_name: 'apply_threshold',
+        args: `[${lower_threshold}, ${upper_threshold}]`,
+      }),
     );
   };
 
@@ -409,7 +419,10 @@ const CustomWebView = ({
   const send_AnalyzeParticles = async () => {
     console.warn('send_AnalyzeParticles');
     webviewRef.current?.postMessage(
-      JSON.stringify({fn_name: 'analyze_particles', args: ''}),
+      JSON.stringify({
+        fn_name: 'analyze_particles',
+        args: `[${lower_particle_size}, ${upper_particle_size}]`,
+      }),
     );
   };
 
@@ -431,6 +444,9 @@ const CustomWebView = ({
     console.warn('receive_getParticleCount');
     console.warn('data: ', data);
     // setParticleCount(JSON.parse(data).particle_count);
+    data
+      ? await update_metadata_particle_count(data.particle_count)
+      : console.warn('no data');
     await send_SaveImageAs3('3.png');
   };
 
@@ -477,6 +493,19 @@ const CustomWebView = ({
       `${source_image_path.split('/').slice(0, -1).join('/')}`,
       image_name,
     );
+  };
+
+  // Updates the metadata file located in the same directory as the source image with the particle count
+  const update_metadata_particle_count = async args => {
+    let metadata_path =
+      `${source_image_path.split('/').slice(0, -1).join('/')}` +
+      '/metadata.json';
+    let _metadata = await RNFetchBlob.fs.readFile(metadata_path, 'utf8');
+    _metadata = JSON.parse(_metadata);
+    _metadata.particle_count = args;
+    _metadata = JSON.stringify(_metadata);
+    await RNFetchBlob.fs.writeFile(metadata_path, _metadata, 'utf8');
+    console.log('metadata updated with '+_metadata+' metadata');
   };
 
   // updates the particleCount hook with the number in the args

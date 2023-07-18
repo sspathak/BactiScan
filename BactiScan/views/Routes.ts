@@ -16,6 +16,7 @@ export type Routes = {
     metadata: any;
   };
   ScanListItem: undefined;
+  ImagePicker: undefined;
   // ScanListItem: {
   //   thumbnail: string;
   //   metadata: any;
