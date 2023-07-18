@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import WebView from 'react-native-webview';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Button} from 'react-native';
+import getParticleCountData from "../scan_viewer/ScanViewer";
 
 var RNFS = require('react-native-fs');
 var file_bytes: any;
@@ -281,12 +282,17 @@ const image_at_path_to_b64 = (path: string) => {
   return RNFS.readFile(path, 'base64');
 };
 
+interface CustomWebViewProps {
+  getParticleCountData: () => Promise<string[] | any[]>
+}
+
 const CustomWebView = ({
-  source_image_path,
-  setParticleCount,
-  results_ready,
-  setResultsReady,
-}) => {
+                         source_image_path,
+                         setParticleCount,
+                         results_ready,
+                         setResultsReady,
+  getParticleCountData,
+                       }) => {
   console.warn('source_image_path: ', source_image_path);
   const webviewRef = useRef<WebView | null>(null);
   const [IJLoaded, setIJLoaded] = useState(false);
@@ -443,65 +449,12 @@ const CustomWebView = ({
       '3.png',
     ).then(() => {
       setResultsReady(true);
+      getParticleCountData();
       console.warn(
         'FILE WRITTEN FROM URL----receive_SaveImageAs3--------------------------',
       );
     });
   };
-
-  // const onLoadEnd = async () => {
-  //   if (load_ended_state) {
-  //     return;
-  //   }
-  //   load_ended_state = true;
-  //   console.warn('onLoadEnd');
-  //   // run test function
-  //   webviewRef.current?.postMessage(
-  //     JSON.stringify({fn_name: 'test_fn', args: 'test args'}),
-  //   );
-  //
-  //   // load image
-  //   let fn_call_message = JSON.stringify({
-  //     fn_name: 'load_image_from_b64',
-  //     args: await image_at_path_to_b64(
-  //       // `${RNFS.DocumentDirectoryPath}/test_img/image.jpg`,
-  //       source_image_path,
-  //     ),
-  //   });
-  //   console.warn(
-  //     'fn_call_message: ' +
-  //       fn_call_message.slice(0, 100) +
-  //       '...' +
-  //       fn_call_message.slice(-100),
-  //   );
-  //   console.warn(
-  //     webviewRef.current
-  //       ? 'webviewRef.current is not null'
-  //       : 'webviewRef.current is null',
-  //   );
-  //   webviewRef.current?.postMessage(fn_call_message);
-  //
-  //   let particle_analysis_macro_message = JSON.stringify({
-  //     fn_name: 'particle_analysis_macro',
-  //     args: '',
-  //   });
-  //   // post message after 5 seconds
-  //   setTimeout(() => {
-  //     webviewRef.current?.postMessage(particle_analysis_macro_message);
-  //   }, 9000);
-  //   // webviewRef.current?.postMessage(particle_analysis_macro_message);
-  //
-  //   let get_image_message = JSON.stringify({
-  //     fn_name: 'get_image',
-  //     args: '',
-  //   });
-  //   // post message after 5 seconds
-  //   setTimeout(() => {
-  //     webviewRef.current?.postMessage(get_image_message);
-  //   }, 14000);
-  //   // webviewRef.current?.postMessage(get_image_message);
-  //   // }
-  // };
 
   const saveDataFromBase64 = async (base64Data, directoryPath, fileName) => {
     try {
