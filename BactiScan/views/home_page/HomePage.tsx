@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import ScanList from './ScanList';
 import {useNavigation, NavigationProp} from '@react-navigation/native';
@@ -9,20 +9,25 @@ import RNFS from 'react-native-fs';
 import {useIsFocused} from '@react-navigation/core';
 import CustomWebView from '../imagej_webview/CustomWebView';
 // import MyInlineWeb from './CustomWebview';
-import chooseFile from '../gallery_page/ImagePicker';
-import captureImage from '../gallery_page/ImagePicker';
+// import chooseFile from '../gallery_page/ImagePicker';
+// import captureImage from '../gallery_page/ImagePicker';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import AppContext from '../AppContext';
 type Props = NavigationProp<Routes, 'Home'>;
 
 const HomePage = () => {
   const navigation = useNavigation<Props>();
   const [scanData, setScanData] = useState([]);
+  const scanItems = useContext(AppContext);
+  scanItems.scanData = scanData;
+  scanItems.setScanData = setScanData;
   const isFocused = useIsFocused();
-
 
   useEffect(() => {
     if (isFocused) {
-      loadSavedData();
+      loadSavedData()
+        .then(r => console.log('loadSavedData result:', r))
+        .catch(e => console.log('loadSavedData error:', e));
     }
   }, [isFocused]);
 
@@ -44,7 +49,10 @@ const HomePage = () => {
     };
     // let isCameraPermitted = await requestCameraPermission();
     // let isStoragePermitted = await requestExternalWritePermission();
-    launchCamera(options, _response => {
+    await launchCamera(options, _response => {
+      if (_response.didCancel) {
+        return;
+      }
       let response = _response.assets[0];
       console.log('Response = ', response);
 
@@ -77,15 +85,18 @@ const HomePage = () => {
     });
   };
 
-  const chooseFile = type => {
+  const chooseFile = async (type: string) => {
     let options = {
       mediaType: type,
       // maxWidth: 300,
       // maxHeight: 550,
       quality: 1,
     };
-    launchImageLibrary(options, _response => {
-      let response = _response['assets'][0];
+    await launchImageLibrary(options, _response => {
+      if (_response.didCancel) {
+        return;
+      }
+      let response = _response.assets[0];
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -104,13 +115,6 @@ const HomePage = () => {
       console.log('base64 -> ', response.base64);
       console.log('uri -> ', response.uri);
       console.log('width -> ', response.width);
-      // console.log('height -> ', response.height);
-      // console.log('fileSize -> ', response.fileSize);
-      // console.log('type -> ', response.type);
-      // console.log('fileName -> ', response.fileName);
-      // convert file uri to path like
-      // file:///var/mobile/Containers/Data/Application/DA1C05C7-CC9E-4C66-A888-7B6B457F36E3/tmp/44C0D87F-3CD0-4D64-B994-A2B0B5EF5C5F.jpg to
-      // ${RNFS.TemporaryDirectoryPath}44C0D87F-3CD0-4D64-B994-A2B0B5EF5C5F.jpg
       let path = response.uri.replace('file://', '');
 
       navigation.navigate('MediaPage', {
@@ -127,26 +131,49 @@ const HomePage = () => {
       const imageDirs = await RNFS.readDir(
         `${RNFS.DocumentDirectoryPath}/${imagesDirPath}`,
       );
+      // sort by path string
+      imageDirs.sort((a, b) => {
+        if (a.path > b.path) {
+          return -1;
+        }
+        if (a.path < b.path) {
+          return 1;
+        }
+        return 0;
+      });
 
       const newData = await Promise.all(
         imageDirs.map(async imageDir => {
-          console.warn(`imageDir.path: ${imageDir.path}`);
+          console.log(`imageDir.path: ${imageDir.path}`);
           const metadataPath = `${imageDir.path}/metadata.json`;
           const metadataContents = await RNFS.readFile(metadataPath);
           const metadata = JSON.parse(metadataContents);
-
-          return {
+          const img_data = {
             thumbnail: {uri: `${imageDir.path}/${metadata.path}`},
             metadata: {
-              title: `Scan ${metadata.timestamp}`,
+              // title: `Scan ${metadata.timestamp}`,
+              title: metadata.title ? metadata.title : `Scan ${metadata.timestamp}`,
               date: '2021-11-01',
               time: '12:00',
+              id: metadata.timestamp,
+              particle_count: metadata.particle_count ? metadata.particle_count : 'Unknown'
             },
           };
+          return img_data;
+          // return {
+          //   thumbnail: {uri: `${imageDir.path}/${metadata.path}`},
+          //   metadata: {
+          //     title: `Scan ${metadata.timestamp}`,
+          //     date: '2021-11-01',
+          //     time: '12:00',
+          //     id: `${metadata.timestamp}`,
+          //   },
+          // };
         }),
       );
-
-      setScanData(newData);
+      console.log('newData:', newData);
+      scanItems.setScanData(newData);
+      // setScanData(newData);
     } catch (error) {
       console.log('Failed to load saved data:', error);
     }
@@ -183,7 +210,7 @@ const HomePage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        <ScanList data={scanData} />
+        <ScanList data={scanItems.scanData} />
         {/*<CustomWebView />*/}
       </View>
       <View style={commonStyles.bottomBar}>

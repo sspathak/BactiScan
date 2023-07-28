@@ -9,14 +9,24 @@ interface ScanListProps {
 }
 
 const ScanList = ({data}) => {
+  console.log('ScanList data:', data)
+  let sorted_data = data;
+  if (data !== null) {
+    sorted_data = data?.sort((a, b) => {
+      a.metadata.id - b.metadata.id;
+    });
+  }
   return (
     <FlatList
-      data={data}
+      data={sorted_data}
       renderItem={({item}) => (
         <ScanListItem thumbnail={item.thumbnail} metadata={item.metadata} />
       )}
-      keyExtractor={item => item.id}
+      keyExtractor={item => item.metadata.id}
       // Add sorting and other list configuration as needed
+      // sort by ID in descending order
+
+
     />
   );
 };

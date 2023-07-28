@@ -1,8 +1,10 @@
-import React, {useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import WebView from 'react-native-webview';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Button} from 'react-native';
-import getParticleCountData from "../scan_viewer/ScanViewer";
+// import getParticleCountData from '../scan_viewer/ScanViewer';
+// import App from '../../App';
+import AppContext from '../AppContext';
 
 var RNFS = require('react-native-fs');
 var file_bytes: any;
@@ -10,6 +12,7 @@ var load_ended_state = false;
 var injectJS = '';
 //ResultsTable = await cjResolveCall("ij.WindowManager", "getIDList", null);
 // getWindow = await cjResolveCall("ij.WindowManager", "getWindow", ['java.lang.String']);
+
 const jsCode = `
 console.log('hello');
 // var cjResolveCall = undefined;
@@ -281,45 +284,42 @@ async function get_image() {
 // });
 
 const image_at_path_to_b64 = (path: string) => {
-  console.warn('TRYING TO READ FILE RNFS at path: ', path);
+  console.log('TRYING TO READ FILE RNFS at path: ', path);
   return RNFS.readFile(path, 'base64');
 };
 
 interface CustomWebViewProps {
-  getParticleCountData: () => Promise<string[] | any[]>
+  getParticleCountData: () => Promise<string[] | any[]>;
 }
 
 const CustomWebView = ({
-                         source_image_path,
-                         setParticleCount,
-                         results_ready,
-                         setResultsReady,
+  source_image_path,
+  setParticleCount,
+  results_ready,
+  setResultsReady,
   getParticleCountData,
-  lower_threshold,
-  upper_threshold,
-  lower_particle_size,
-  upper_particle_size,
-                       }) => {
-  console.warn('source_image_path: ', source_image_path);
+}) => {
+  console.log('source_image_path: ', source_image_path);
   const webviewRef = useRef<WebView | null>(null);
   const [IJLoaded, setIJLoaded] = useState(false);
-
+  const particleCountParams = useContext(AppContext);
+  console.log(`using params: ${particleCountParams.global_lower_threshold}, ${particleCountParams.global_upper_threshold}, ${particleCountParams.global_lower_size}, ${particleCountParams.global_upper_size}`);
   const send_InitIJ = async () => {
-    console.warn('send_InitIJ');
+    console.log('send_InitIJ');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'init_ij', args: 'test args'}),
     );
   };
 
   const receive_InitIJ = async (data: any) => {
-    console.warn('receive_InitIJ');
-    console.warn('data: ', data);
+    console.log('receive_InitIJ');
+    console.log('data: ', data);
     setIJLoaded(true);
     await send_LoadImage();
   };
 
   const send_LoadImage = async () => {
-    console.warn('send_LoadImage');
+    console.log('send_LoadImage');
     let image_b64 = await image_at_path_to_b64(`${source_image_path}`);
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'load_image_from_b64', args: image_b64}),
@@ -327,39 +327,39 @@ const CustomWebView = ({
   };
 
   const receive_LoadImage = async (data: any) => {
-    console.warn('receive_LoadImage');
-    console.warn('data: ', data);
+    console.log('receive_LoadImage');
+    console.log('data: ', data);
     await send_ConvertImageTo8Bit();
   };
 
   const send_ConvertImageTo8Bit = async () => {
-    console.warn('send_ConvertImageTo8Bit');
+    console.log('send_ConvertImageTo8Bit');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'convert_image_to_8bit', args: ''}),
     );
   };
 
   const receive_ConvertImageTo8Bit = async (data: any) => {
-    console.warn('receive_ConvertImageTo8Bit');
-    console.warn('data: ', data);
+    console.log('receive_ConvertImageTo8Bit');
+    console.log('data: ', data);
     await send_SaveImageAs('1.png');
   };
 
   const send_SaveImageAs = async (save_filename: string) => {
-    console.warn('send_SaveImageAs');
+    console.log('send_SaveImageAs');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'save_image_as', args: '1'}),
     );
   };
 
   const receive_SaveImageAs = async (data: any) => {
-    console.warn('receive_SaveImageAs');
+    console.log('receive_SaveImageAs');
     await saveDataFromBase64(
       data,
       `${source_image_path.split('/').slice(0, -1).join('/')}`,
       '1.png',
     ).then(() => {
-      console.warn(
+      console.log(
         'FILE WRITTEN FROM URL----receive_SaveImageAs--------------------------',
       );
     });
@@ -367,49 +367,49 @@ const CustomWebView = ({
   };
 
   const send_ApplyThreshold = async () => {
-    console.warn('send_ApplyThreshold');
+    console.log('send_ApplyThreshold');
     webviewRef.current?.postMessage(
       JSON.stringify({
         fn_name: 'apply_threshold',
-        args: `[${lower_threshold}, ${upper_threshold}]`,
+        args: `[${particleCountParams.global_lower_threshold}, ${particleCountParams.global_upper_threshold}]`,
       }),
     );
   };
 
   const receive_ApplyThreshold = async (data: any) => {
-    console.warn('receive_ApplyThreshold');
-    console.warn('data: ', data);
+    console.log('receive_ApplyThreshold');
+    console.log('data: ', data);
     await send_ApplyMask();
   };
 
   const send_ApplyMask = async () => {
-    console.warn('send_ApplyMask');
+    console.log('send_ApplyMask');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'apply_mask', args: ''}),
     );
   };
 
   const receive_ApplyMask = async (data: any) => {
-    console.warn('receive_ApplyMask');
-    console.warn('data: ', data);
+    console.log('receive_ApplyMask');
+    console.log('data: ', data);
     await send_SaveImageAs2('2.png');
   };
 
   const send_SaveImageAs2 = async (save_filename: string) => {
-    console.warn('send_SaveImageAs2');
+    console.log('send_SaveImageAs2');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'save_image_as', args: '2'}),
     );
   };
 
   const receive_SaveImageAs2 = async (data: any) => {
-    console.warn('receive_SaveImageAs2');
+    console.log('receive_SaveImageAs2');
     await saveDataFromBase64(
       data,
       `${source_image_path.split('/').slice(0, -1).join('/')}`,
       '2.png',
     ).then(() => {
-      console.warn(
+      console.log(
         'FILE WRITTEN FROM URL----receive_SaveImageAs2--------------------------',
       );
     });
@@ -417,23 +417,23 @@ const CustomWebView = ({
   };
 
   const send_AnalyzeParticles = async () => {
-    console.warn('send_AnalyzeParticles');
+    console.log('send_AnalyzeParticles');
     webviewRef.current?.postMessage(
       JSON.stringify({
         fn_name: 'analyze_particles',
-        args: `[${lower_particle_size}, ${upper_particle_size}]`,
+        args: `[${particleCountParams.global_lower_size}, ${particleCountParams.global_upper_size}]`,
       }),
     );
   };
 
   const receive_AnalyzeParticles = async (data: any) => {
-    console.warn('receive_AnalyzeParticles');
-    console.warn('data: ', data);
+    console.log('receive_AnalyzeParticles');
+    console.log('data: ', data);
     await send_getParticleCount();
   };
 
   const send_getParticleCount = async () => {
-    console.warn('send_getParticleCount');
+    console.log('send_getParticleCount');
     // N2ij13WindowManager.nonImageList3.elementData1.at(1).component60.elementData1.at(1).rt111
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'get_particle_count', args: ''}),
@@ -441,24 +441,24 @@ const CustomWebView = ({
   };
 
   const receive_GetParticleCount = async (data: any) => {
-    console.warn('receive_getParticleCount');
-    console.warn('data: ', data);
+    console.log('receive_getParticleCount');
+    console.log('data: ', data);
     // setParticleCount(JSON.parse(data).particle_count);
     data
       ? await update_metadata_particle_count(data.particle_count)
-      : console.warn('no data');
+      : console.log('no data');
     await send_SaveImageAs3('3.png');
   };
 
   const send_SaveImageAs3 = async (save_filename: string) => {
-    console.warn('send_SaveImageAs3');
+    console.log('send_SaveImageAs3');
     webviewRef.current?.postMessage(
       JSON.stringify({fn_name: 'save_image_as', args: '3'}),
     );
   };
 
   const receive_SaveImageAs3 = async (data: any) => {
-    console.warn('receive_SaveImageAs3');
+    console.log('receive_SaveImageAs3');
     await saveDataFromBase64(
       data,
       `${source_image_path.split('/').slice(0, -1).join('/')}`,
@@ -466,7 +466,7 @@ const CustomWebView = ({
     ).then(() => {
       setResultsReady(true);
       getParticleCountData();
-      console.warn(
+      console.log(
         'FILE WRITTEN FROM URL----receive_SaveImageAs3--------------------------',
       );
     });
@@ -474,11 +474,11 @@ const CustomWebView = ({
 
   const saveDataFromBase64 = async (base64Data, directoryPath, fileName) => {
     try {
-      console.warn('Saving file...');
+      console.log('Saving file...');
       const filePath = `${directoryPath}/${fileName}`;
       await RNFetchBlob.fs.writeFile(filePath, base64Data, 'base64');
     } catch (error) {
-      console.warn('Error saving file:', error);
+      console.log('Error saving file:', error);
     }
   };
 
@@ -505,7 +505,7 @@ const CustomWebView = ({
     _metadata.particle_count = args;
     _metadata = JSON.stringify(_metadata);
     await RNFetchBlob.fs.writeFile(metadata_path, _metadata, 'utf8');
-    console.log('metadata updated with '+_metadata+' metadata');
+    console.log('metadata updated with ' + _metadata + ' metadata');
   };
 
   // updates the particleCount hook with the number in the args
@@ -522,7 +522,7 @@ const CustomWebView = ({
   // }
 
   const onMessage = async (message: any) => {
-    console.warn('onMessage');
+    console.log('onMessage');
     console.log(
       'Received message: ',
       message.nativeEvent.data.slice(0, 100) +
@@ -537,7 +537,7 @@ const CustomWebView = ({
       console.log(
         'successfull parsed webview_reply, inp_fn_name, inp_fn_args, inp_fn_return',
       );
-      console.warn(
+      console.log(
         `inp_fn_name: ${inp_fn_name}, inp_fn_args: ${JSON.stringify(
           inp_fn_args,
         ).slice(0, 100)}, inp_fn_return: ${JSON.stringify(inp_fn_return).slice(
@@ -547,14 +547,14 @@ const CustomWebView = ({
       );
       if (JSON.parse(webview_reply.input).fn_name === 'test_fn') {
         if (JSON.parse(webview_reply.args).a === 1) {
-          console.warn('success!');
+          console.log('success!');
         } else {
           console.warn('invalid return value received from webview');
         }
       }
       if (JSON.parse(webview_reply.input).fn_name === 'load_image_1') {
-        console.warn('calling load_image_1');
-        console.warn(
+        console.log('calling load_image_1');
+        console.log(
           'Received message: ',
           message.nativeEvent.data.slice(0, 100),
         );
@@ -563,7 +563,7 @@ const CustomWebView = ({
           `${source_image_path.split('/').slice(0, -1).join('/')}`,
           '3.png',
         ).then(() => {
-          console.warn('FILE WRITTEN FROM URL------------------------------');
+          console.log('FILE WRITTEN FROM URL------------------------------');
         });
       }
       let fn_name = JSON.parse(webview_reply.input).fn_name;
@@ -591,7 +591,7 @@ const CustomWebView = ({
       } else if (fn_name === 'get_particle_count_final') {
         await receive_GetParticleCount(args);
       } else {
-        console.warn('invalid fn_name received from webview');
+        console.log('invalid fn_name received from webview');
       }
     } catch (e) {
       console.warn('catch@@');

@@ -28,7 +28,9 @@ const ScanListItem = ({thumbnail, metadata}) => {
         <View style={styles.metadataContainer}>
           <Text style={styles.title}>{metadata.title}</Text>
           <Text style={styles.date}>{metadata.date}</Text>
-          {/* Add other metadata fields as needed */}
+          <Text style={styles.particleCount}>{ 'Count: ' + (metadata.particle_count ? metadata.particle_count : 'Unknown') }</Text>
+          {/*<Text*/}
+          {/* // Add other metadata fields as needed */}
         </View>
       </TouchableOpacity>
     </View>
@@ -67,6 +69,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888888',
   },
+  particleCount: {
+    fontSize: 14,
+    color: '#888888'
+  }
 });
 
 export default ScanListItem;

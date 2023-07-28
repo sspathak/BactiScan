@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useContext, useRef, useState} from 'react';
 import {
   Alert,
   Modal,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import React from 'react';
+import AppContext from "../AppContext";
 
 interface EditParametersModalProps {
   setLowerThreshold: ((text: string) => void) | undefined;
@@ -32,15 +33,12 @@ const EditParametersModal = ({
   setLowerParticleSize,
   setUpperParticleSize,
   setResultsReady,
-  lower_threshold,
-  upper_threshold,
-  lower_particle_size,
-  upper_particle_size,
 }) => {
   const lowerThreshold = useRef(null);
   const upperThreshold = useRef(null);
   const lowerParticle = useRef(null);
   const upperParticle = useRef(null);
+  const particleCountParams = useContext(AppContext);
   const handleInputSubmit = nextInputRef => {
     if (nextInputRef && nextInputRef.current) {
       nextInputRef.current.focus();
@@ -54,7 +52,7 @@ const EditParametersModal = ({
             ref={lowerThreshold}
             style={styles.input}
             onChangeText={setLowerThreshold}
-            placeholder={lower_threshold.toString()}
+            placeholder={particleCountParams.global_lower_threshold.toString()}
             placeholderTextColor={'gray'}
             keyboardType="numeric"
             returnKeyType="done"
@@ -65,7 +63,7 @@ const EditParametersModal = ({
             ref={upperThreshold}
             style={styles.input}
             onChangeText={setUpperThreshold}
-            placeholder={upper_threshold.toString()}
+            placeholder={particleCountParams.global_upper_threshold.toString()}
             placeholderTextColor={'gray'}
             keyboardType="numeric"
             returnKeyType="done"
@@ -78,7 +76,7 @@ const EditParametersModal = ({
             ref={lowerParticle}
             style={styles.input}
             onChangeText={setLowerParticleSize}
-            placeholder={lower_particle_size.toString()}
+            placeholder={particleCountParams.global_lower_size.toString()}
             placeholderTextColor={'gray'}
             keyboardType="numeric"
             returnKeyType="done"
@@ -89,7 +87,7 @@ const EditParametersModal = ({
             ref={upperParticle}
             style={styles.input}
             onChangeText={setUpperParticleSize}
-            placeholder={upper_particle_size.toString()}
+            placeholder={particleCountParams.global_upper_size.toString()}
             placeholderTextColor={'gray'}
             keyboardType="numeric"
             returnKeyType="done"
@@ -162,16 +160,17 @@ const EditParametersModal = ({
           }}
           statusBarTranslucent={true}>
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Particle Count Parameters</Text>
-              {headerTextLabels()}
-              <View style={{flexDirection: 'row'}}>
-                {SizeThresholdText()}
-                {ParameterInputGrid()}
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Particle Count Parameters</Text>
+                {headerTextLabels()}
+                <View style={{flexDirection: 'row'}}>
+                  {SizeThresholdText()}
+                  {ParameterInputGrid()}
+                </View>
+                {SetCancelButtons()}
               </View>
-              {SetCancelButtons()}
+          <View style={{height: 100}}></View>
             </View>
-          </View>
         </Modal>
       </View>
     </View>

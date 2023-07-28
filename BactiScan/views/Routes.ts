@@ -1,3 +1,11 @@
+type ImageData = {
+  id: string;
+  thumbnail: {
+    uri: string;
+  };
+  metadata: any;
+  type: 'video' | 'photo';
+};
 export type Routes = {
   PermissionsPage: undefined;
   CameraPage: undefined;
@@ -11,10 +19,7 @@ export type Routes = {
   Camera: undefined;
   Gallery: undefined;
   Scan: undefined;
-  ScanViewer: {
-    thumbnail: string;
-    metadata: any;
-  };
+  ScanViewer: ImageData;
   ScanListItem: undefined;
   ImagePicker: undefined;
   // ScanListItem: {

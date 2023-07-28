@@ -122,14 +122,14 @@ export function MediaPage({navigation, route}: Props): React.ReactElement {
     try {
       // Create a unique directory for each image
       const imageDirPath = `images/${Date.now()}`;
-      console.warn(
+      console.log(
         'creating directory ' + `${RNFS.DocumentDirectoryPath}/${imageDirPath}`,
       );
       await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${imageDirPath}`);
 
       // Save the image to the directory
       const imagePath = 'image.jpg';
-      console.warn(
+      console.log(
         'path: ',
         `${RNFS.DocumentDirectoryPath}/${imageDirPath}/${imagePath}`,
       );

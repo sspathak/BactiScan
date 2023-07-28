@@ -45,6 +45,8 @@
 	<string>Allow taking photos using the app</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Allow saving photos to the photos app</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow photos operations</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

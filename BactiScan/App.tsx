@@ -5,15 +5,17 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
+import AppContext from './views/AppContext';
 import {
   Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text, TouchableOpacity,
+  Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -74,45 +76,58 @@ function Section({children, title}: SectionProps): JSX.Element {
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
+  const [global_lower_threshold, setGlobalLowerThreshold] = useState(150);
+  const [global_upper_threshold, setGlobalUpperThreshold] = useState(255);
+  const [global_lower_size, setGlobalLowerSize] = useState(20);
+  const [global_upper_size, setGlobalUpperSize] = useState(100000);
+  const particle_count_params = {
+    global_lower_threshold: global_lower_threshold,
+    global_upper_threshold: global_upper_threshold,
+    global_lower_size: global_lower_size,
+    global_upper_size: global_upper_size,
+    setGlobalLowerSize: setGlobalLowerSize,
+    setGlobalUpperSize: setGlobalUpperSize,
+    setGlobalLowerThreshold: setGlobalLowerThreshold,
+    setGlobalUpperThreshold: setGlobalUpperThreshold,
+  };
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-
   // const navigation = useNavigation();
 
   return (
-
-    <NavigationContainer>
-      <StatusBar barStyle={'dark-content'} translucent={true}/>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Screen name="Home" component={HomePage} />
-        <Stack.Screen name="Settings" component={SettingsPage} />
-        <Stack.Screen name="Search" component={SearchPage} />
-        <Stack.Screen
-          name="Filter"
-          component={FilterPage}
-          options={verticalAnimation}
-        />
-        {/*<Stack.Screen name="Scan" component={ScanPage} />*/}
-        <Stack.Screen
-          name="Camera"
-          component={CameraPage}
-          options={verticalAnimation}
-        />
-        <Stack.Screen
-          name="Gallery"
-          component={ImagePicker}
-          options={verticalAnimation}
-        />
-        <Stack.Screen name="MediaPage" component={MediaPage} />
-        <Stack.Screen name="ScanViewer" component={ScanViewer} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AppContext.Provider value={particle_count_params}>
+      <NavigationContainer>
+        <StatusBar barStyle={'dark-content'} translucent={true} />
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="Home" component={HomePage} />
+          <Stack.Screen name="Settings" component={SettingsPage} />
+          <Stack.Screen name="Search" component={SearchPage} />
+          <Stack.Screen
+            name="Filter"
+            component={FilterPage}
+            options={verticalAnimation}
+          />
+          {/*<Stack.Screen name="Scan" component={ScanPage} />*/}
+          <Stack.Screen
+            name="Camera"
+            component={CameraPage}
+            options={verticalAnimation}
+          />
+          <Stack.Screen
+            name="Gallery"
+            component={ImagePicker}
+            options={verticalAnimation}
+          />
+          <Stack.Screen name="MediaPage" component={MediaPage} />
+          <Stack.Screen name="ScanViewer" component={ScanViewer} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppContext.Provider>
   );
 }
 
