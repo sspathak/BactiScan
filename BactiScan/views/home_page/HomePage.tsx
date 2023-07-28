@@ -153,8 +153,10 @@ const HomePage = () => {
             metadata: {
               // title: `Scan ${metadata.timestamp}`,
               title: metadata.title ? metadata.title : `Scan ${metadata.timestamp}`,
-              date: '2021-11-01',
-              time: '12:00',
+              // Get date from timestamp
+              date: new Date(metadata.timestamp).toLocaleDateString(),
+              // Get time from timestamp
+              time: new Date(metadata.timestamp).toLocaleTimeString(),
               id: metadata.timestamp,
               particle_count: metadata.particle_count ? metadata.particle_count : 'Unknown'
             },
@@ -198,11 +200,12 @@ const HomePage = () => {
   return (
     <View style={commonStyles.container}>
       <View style={commonStyles.header}>
-        <TouchableOpacity
-          style={commonStyles.iconButton}
-          onPress={goToSettings}>
-          <IonIcon name="settings-outline" size={32} />
-        </TouchableOpacity>
+        {/*<TouchableOpacity*/}
+        {/*  style={{...commonStyles.iconButton}}*/}
+        {/*  onPress={goToSettings}>*/}
+        {/*  <IonIcon name="settings-outline" size={32} />*/}
+        {/*</TouchableOpacity>*/}
+        <View style={{...commonStyles.iconButton, width: 32, height:32}}></View>
         <Text style={commonStyles.title}>BactiScan</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToSearch}>
           <IonIcon name="search-outline" size={32} />
@@ -210,7 +213,21 @@ const HomePage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
+        {
+          scanItems.scanData.length === 0 && (
+            <View style={{
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: 50,
+              alignItems: 'center',
+
+            }}>
+              <Text style={{color:'#888888'}}>Added scans will appear here</Text>
+            </View>
+          )
+        }
         <ScanList data={scanItems.scanData} />
+
         {/*<CustomWebView />*/}
       </View>
       <View style={commonStyles.bottomBar}>

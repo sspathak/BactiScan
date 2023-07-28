@@ -51,8 +51,10 @@ const SearchPage = () => {
             metadata: {
               // title: `Scan ${metadata.timestamp}`,
               title: metadata.title ? metadata.title : `Scan ${metadata.timestamp}`,
-              date: '2021-11-01',
-              time: '12:00',
+              // Get date from timestamp
+              date: new Date(metadata.timestamp).toLocaleDateString(),
+              // Get time from timestamp
+              time: new Date(metadata.timestamp).toLocaleTimeString(),
               id: metadata.timestamp,
               particle_count: metadata.particle_count ? metadata.particle_count : 'Unknown'
             },

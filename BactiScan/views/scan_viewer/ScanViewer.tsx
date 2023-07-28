@@ -25,7 +25,6 @@ import CustomWebView from '../imagej_webview/CustomWebView';
 import EditParametersModal from './EditParametersModal';
 import CameraRoll from '@react-native-community/cameraroll';
 
-
 import AppContext from '../AppContext';
 
 type Props = NativeStackScreenProps<Routes, 'ScanViewer'>;
@@ -50,40 +49,51 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
   };
 
   const exportToGallery = async () => {
-    RNFS.exists(result_images[viewing_image]).then(status => {
-      if (status) {
-        console.log('Yay! File exists');
-      } else {
-        console.log('File not exists');
-      }
-    });
-    try {
-      CameraRoll.save(result_images[viewing_image], 'photo').then(
-        res => {
-          console.log('Success', 'Image exported to gallery');
-        }).catch(err => {
-          console.log('Failed to export image:', err);
-          console.log(`${result_images[viewing_image]}`);
-          Alert.alert(
-            'Export failed',
-            'An error occurred while exporting the image',
-          );
-        });
-      // await RNFS.copyFile(
-      //   // thumbnail.uri,
-      //   // `${result_images[viewing_image].split('/').slice(0, -1).join('/')}/image.jpg`,
-      //   `${result_images[viewing_image]}`,
-      //   `${RNFS.PicturesDirectoryPath}/scanned_image.jpg`,
-      // );
-      console.log('Success', 'Image exported to gallery');
-    } catch (error) {
-      console.log('Failed to export image:', error);
-      console.log(`${result_images[viewing_image]}`);
-      Alert.alert(
-        'Export failed',
-        'An error occurred while exporting the image',
-      );
-    }
+    Alert.alert(
+      'Save to Photos',
+      'Would you like to save this image to Photos?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Save',
+          style: 'default',
+          onPress: async () => {
+            RNFS.exists(result_images[viewing_image]).then(status => {
+              if (status) {
+                console.log('Yay! File exists');
+              } else {
+                console.log('File not exists');
+              }
+            });
+            try {
+              CameraRoll.save(result_images[viewing_image], 'photo')
+                .then(res => {
+                  console.log('Success', 'Image exported to gallery');
+                })
+                .catch(err => {
+                  console.log('Failed to export image:', err);
+                  console.log(`${result_images[viewing_image]}`);
+                  Alert.alert(
+                    'Export failed',
+                    'An error occurred while exporting the image',
+                  );
+                });
+              console.log('Success', 'Image exported to gallery');
+            } catch (error) {
+              console.log('Failed to export image:', error);
+              console.log(`${result_images[viewing_image]}`);
+              Alert.alert(
+                'Export failed',
+                'An error occurred while exporting the image',
+              );
+            }
+          },
+        },
+      ],
+    );
   };
 
   const updateParticleCountValue = async () => {
@@ -199,7 +209,7 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
   };
 
   return (
-    <View style={commonStyles.container}>
+    <View style={{...commonStyles.container}}>
       <View style={commonStyles.header}>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goBack}>
           <IonIcon name="arrow-back-outline" size={32} />
@@ -208,7 +218,12 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
           <IonIcon name="trash-outline" size={32} />
         </TouchableOpacity>
       </View>
-      <View style={commonStyles.metadataContainer}>
+      <View
+        style={{
+          ...commonStyles.metadataContainer,
+          borderRadius: 10,
+          backgroundColor: '#E4E4E4',
+        }}>
         {/*<Text style={commonStyles.metadataTitle}>{metadata.title}</Text>*/}
         <View
           style={{
@@ -220,15 +235,14 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
           <TextInput
             style={{
               height: 40,
-              // borderWidth: 1,
+              borderWidth: 1,
               padding: 5,
               width: '100%',
-              // borderRadius: 5,
+              borderRadius: 5,
               ...commonStyles.metadataTitle,
+              borderStyle: 'dotted',
+              borderColor: '#BBBBBB',
             }}
-            // onChangeText={}
-            // placeholder={metadata.title}
-            // placeholderTextColor={'black'}
             defaultValue={metadata.title}
             keyboardType="default"
             returnKeyType="done"
@@ -253,10 +267,6 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
           results_ready={results_ready}
           setResultsReady={setResultsReady}
           getParticleCountData={getParticleCountData}
-          // lower_threshold={particleCountParams.global_lower_threshold}
-          // upper_threshold={particleCountParams.global_upper_threshold}
-          // lower_particle_size={particleCountParams.global_lower_particle_size}
-          // upper_particle_size={particleCountParams.global_upper_particle_size}
         />
       ) : (
         <>
@@ -303,18 +313,28 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
           </View>
         </>
       )}
-
-      <View style={commonStyles.bottomBar}>
-        <View style={commonStyles.buttonContainerBorder}>
-          <View style={commonStyles.buttonContainer}>
-            <TouchableOpacity
-              style={{...commonStyles.iconButton, marginLeft:0, padding:4, alignItems:'center', justifyContent:'center'}}
-              onPress={exportToGallery}>
-              <IonIcon name="download-outline" size={32} />
-            </TouchableOpacity>
+      {results_ready ? (
+        <View style={commonStyles.bottomBar}>
+          <View style={commonStyles.buttonContainerBorder}>
+            <View style={commonStyles.buttonContainer}>
+              <TouchableOpacity
+                style={{
+                  ...commonStyles.iconButton,
+                  marginLeft: 2,
+                  marginRight: 0,
+                  marginBottom: 2,
+                  padding: 4,
+                  paddingHorizontal: 5,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                onPress={exportToGallery}>
+                <IonIcon name="download-outline" size={32} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      ) : null}
     </View>
   );
 }

@@ -28,6 +28,7 @@ const ScanListItem = ({thumbnail, metadata}) => {
         <View style={styles.metadataContainer}>
           <Text style={styles.title}>{metadata.title}</Text>
           <Text style={styles.date}>{metadata.date}</Text>
+          <Text style={styles.date}>{metadata.time}</Text>
           <Text style={styles.particleCount}>{ 'Count: ' + (metadata.particle_count ? metadata.particle_count : 'Unknown') }</Text>
           {/*<Text*/}
           {/* // Add other metadata fields as needed */}

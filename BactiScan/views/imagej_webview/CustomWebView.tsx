@@ -1,7 +1,7 @@
 import React, {useContext, useRef, useState} from 'react';
 import WebView from 'react-native-webview';
 import RNFetchBlob from 'rn-fetch-blob';
-import {Button} from 'react-native';
+import {ActivityIndicator, Button, Text, View} from 'react-native';
 // import getParticleCountData from '../scan_viewer/ScanViewer';
 // import App from '../../App';
 import AppContext from '../AppContext';
@@ -303,7 +303,9 @@ const CustomWebView = ({
   const webviewRef = useRef<WebView | null>(null);
   const [IJLoaded, setIJLoaded] = useState(false);
   const particleCountParams = useContext(AppContext);
-  console.log(`using params: ${particleCountParams.global_lower_threshold}, ${particleCountParams.global_upper_threshold}, ${particleCountParams.global_lower_size}, ${particleCountParams.global_upper_size}`);
+  console.log(
+    `using params: ${particleCountParams.global_lower_threshold}, ${particleCountParams.global_upper_threshold}, ${particleCountParams.global_lower_size}, ${particleCountParams.global_upper_size}`,
+  );
   const send_InitIJ = async () => {
     console.log('send_InitIJ');
     webviewRef.current?.postMessage(
@@ -620,28 +622,59 @@ const CustomWebView = ({
 
   return (
     <>
-      <Button title="triggerOnLoadEnd" onPress={load_trigger} />
+      {/*<Button title="Restart " onPress={load_trigger} />*/}
+
       {/*render webview if results ready is false*/}
       {!results_ready ? (
-        <WebView
-          ref={webviewRef}
-          source={{
-            // uri: 'https://google.com',
-            uri: 'https://ij.imjoy.io/',
-          }}
+        <View
           style={{
-            marginTop: 20,
-            width: 300,
-            height: 300,
-            backgroundColor: 'red',
-          }}
-          originWhitelist={['*']}
-          // injectedJavaScript={jsCode}
-          injectedJavaScriptBeforeContentLoaded={jsCode}
-          javaScriptEnabled={true}
-          onMessage={onMessage}
-          onLoadEnd={triggerOnLoadEnd}
-        />
+            display: 'flex',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: 100,
+          }}>
+          <View
+            style={{
+              display: 'flex',
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: 100,
+            }}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+              }}>
+              <Text>Processing image...</Text>
+              <ActivityIndicator />
+            </View>
+          </View>
+          <WebView
+            ref={webviewRef}
+            source={{
+              // uri: 'https://google.com',
+              uri: 'https://ij.imjoy.io/',
+            }}
+            style={{
+              marginTop: 0,
+              width: '100%',
+              height: '50%',
+              backgroundColor: 'red',
+            }}
+            scalesPageToFit={true}
+            containerStyle={[{flex: 0, width: '90%', height: '90%'}]}
+            originWhitelist={['*']}
+            // injectedJavaScript={jsCode}
+            injectedJavaScriptBeforeContentLoaded={jsCode}
+            javaScriptEnabled={true}
+            onMessage={onMessage}
+            onLoadEnd={triggerOnLoadEnd}
+          />
+        </View>
       ) : (
         <></>
       )}

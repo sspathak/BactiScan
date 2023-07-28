@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonContainer: {
-    backgroundColor: 'lightgray',
+    // backgroundColor: 'lightgray',
+    backgroundColor: '#AACCEE',
     borderRadius: 40,
     padding: 5,
     // marginLeft: 10,
@@ -130,6 +131,7 @@ const styles = StyleSheet.create({
   metadataText: {
     fontSize: 16,
     marginBottom: 5,
+    paddingLeft: 5,
   },
 });
 
