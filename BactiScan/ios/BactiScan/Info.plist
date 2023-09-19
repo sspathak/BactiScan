@@ -30,23 +30,19 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSAllowsArbitraryLoads</key>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+		<dict/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow taking photos using the app</string>
+	<string>Grant BactiScan access to your device's camera to capture and analyze pictures with your smartphone microscope attachment</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow saving photos to the photos app</string>
+	<string>BactiScan requires your permission to add scans and processed images to your Photos library for secure storage and easy retrieval.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow photos operations</string>
+	<string>BactiScan requires access to your Photos library to read microscope images for bacterial analysis and data import.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

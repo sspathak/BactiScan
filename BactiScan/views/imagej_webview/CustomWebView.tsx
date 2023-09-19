@@ -109,8 +109,8 @@ async function init_ij(args) {
 
 function load_image_from_b64(b64_string) {
   bytes = convert_b64_to_bytes(b64_string);
-  cheerpjAddStringFile('/str/custom_file_lol.jpg', bytes);
-  ij.open('/str/custom_file_lol.jpg');
+  cheerpjAddStringFile('/str/custom_file.jpg', bytes);
+  ij.open('/str/custom_file.jpg');
   console.log('IMAGE OPENED');
   return JSON.stringify({status: 'success'});
 }
