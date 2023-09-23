@@ -32,12 +32,16 @@ const EditParametersModal = ({
   setUpperThreshold,
   setLowerParticleSize,
   setUpperParticleSize,
+  setLowerBandpass,
+  setUpperBandpass,
   setResultsReady,
 }) => {
   const lowerThreshold = useRef(null);
   const upperThreshold = useRef(null);
   const lowerParticle = useRef(null);
   const upperParticle = useRef(null);
+  const lowerBandpass = useRef(null);
+  const upperBandpass = useRef(null);
   const particleCountParams = useContext(AppContext);
   const handleInputSubmit = nextInputRef => {
     if (nextInputRef && nextInputRef.current) {
@@ -92,6 +96,30 @@ const EditParametersModal = ({
             keyboardType="numeric"
             returnKeyType="done"
             returnKeyLabel="Done"
+            onSubmitEditing={() => handleInputSubmit(lowerBandpass)}
+          />
+        </View>
+        <View style={styles.parameterInput}>
+          <TextInput
+            ref={lowerBandpass}
+            style={styles.input}
+            onChangeText={setLowerBandpass}
+            placeholder={particleCountParams.global_lower_bandpass.toString()}
+            placeholderTextColor={'gray'}
+            keyboardType="numeric"
+            returnKeyType="done"
+            returnKeyLabel="Next"
+            onSubmitEditing={() => handleInputSubmit(upperBandpass)}
+          />
+          <TextInput
+            ref={upperBandpass}
+            style={styles.input}
+            onChangeText={setUpperBandpass}
+            placeholder={particleCountParams.global_upper_bandpass.toString()}
+            placeholderTextColor={'gray'}
+            keyboardType="numeric"
+            returnKeyType="done"
+            returnKeyLabel="Done"
           />
         </View>
       </View>
@@ -108,6 +136,7 @@ const EditParametersModal = ({
         }}>
         <Text>Threshold</Text>
         <Text>Size</Text>
+        <Text>Bandpass</Text>
       </View>
     );
   };

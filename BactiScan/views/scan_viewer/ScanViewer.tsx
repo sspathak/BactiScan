@@ -46,6 +46,8 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
     threshold_max: 100,
     particle_size_min: 5,
     particle_size_max: 100,
+    bandpass_small: 0,
+    bandpass_large: 5,
   };
 
   const exportToGallery = async () => {
@@ -278,6 +280,8 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
               setUpperThreshold={particleCountParams.setGlobalUpperThreshold}
               setLowerParticleSize={particleCountParams.setGlobalLowerSize}
               setUpperParticleSize={particleCountParams.setGlobalUpperSize}
+              setLowerBandpass={particleCountParams.setGlobalLowerBandpass}
+              setUpperBandpass={particleCountParams.setGlobalUpperBandpass}
               setResultsReady={setResultsReady}
               // lower_threshold={particleCountParams.global_lower_threshold}
               // upper_threshold={particleCountParams.global_upper_threshold}

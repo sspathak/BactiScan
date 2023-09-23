@@ -80,15 +80,21 @@ function App(): JSX.Element {
   const [global_upper_threshold, setGlobalUpperThreshold] = useState(255);
   const [global_lower_size, setGlobalLowerSize] = useState(20);
   const [global_upper_size, setGlobalUpperSize] = useState(100000);
+  const [global_lower_bandpass, setGlobalLowerBandpass] = useState(0);
+  const [global_upper_bandpass, setGlobalUpperBandpass] = useState(5);
   const particle_count_params = {
     global_lower_threshold: global_lower_threshold,
     global_upper_threshold: global_upper_threshold,
     global_lower_size: global_lower_size,
     global_upper_size: global_upper_size,
+    global_lower_bandpass: global_lower_bandpass,
+    global_upper_bandpass: global_upper_bandpass,
     setGlobalLowerSize: setGlobalLowerSize,
     setGlobalUpperSize: setGlobalUpperSize,
     setGlobalLowerThreshold: setGlobalLowerThreshold,
     setGlobalUpperThreshold: setGlobalUpperThreshold,
+    setGlobalLowerBandpass: setGlobalLowerBandpass,
+    setGlobalUpperBandpass: setGlobalUpperBandpass,
   };
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,

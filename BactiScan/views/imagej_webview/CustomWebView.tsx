@@ -115,13 +115,59 @@ function load_image_from_b64(b64_string) {
   return JSON.stringify({status: 'success'});
 }
 
-function convert_image_to_8bit() {
+async function apply_bandpass_filter(_args) {
+  args = JSON.parse(_args);
+  console.log('APPLYING BANDPASS FILTER');
+  ij.runMacro(\`run("Bandpass Filter...", "filter_large=\${args[1]} filter_small=\${args[0]} suppress=None tolerance=5 autoscale saturate");
+  setOption("WaitForCompletion", true);
+  \`);
+  let get_image = await cjResolveCall("ij.WindowManager", "getCurrentImage");
+  let in_proc = await get_image()
+  while (in_proc.locked9 === 1) {
+    console.log('waiting for bandpass to finish');
+    in_proc = await get_image()
+  }
+  // window.ReactNativeWebView.postMessage(JSON.stringify({
+  //   input: JSON.stringify({fn_name: 'print', args: {success: 'success'}}),
+  //   return: JSON.stringify({status: 'whaaaaat'}),
+  // }));
+  return JSON.stringify({status: 'success'});
+};
+
+
+async function equalize_histogram() {
+  console.log('EQUALIZING HISTOGRAM');
+  let get_image = await cjResolveCall("ij.WindowManager", "getCurrentImage");
+  let in_proc = await get_image()
+  while (in_proc.locked9 === 1) {
+    console.log('waiting for bandpass to finish');
+    in_proc = await get_image()
+  }
+  ij.runMacro(\`run("Enhance Contrast...", "saturated=50 equalize");;
+  setOption("WaitForCompletion", true);
+  \`);
+  return JSON.stringify({status: 'success'});
+};
+
+async function convert_image_to_8bit() {
+  let get_image = await cjResolveCall("ij.WindowManager", "getCurrentImage");
+  let in_proc = await get_image()
+  while (in_proc.locked9 === 1) {
+    console.log('waiting for bandpass to finish');
+    in_proc = await get_image()
+  }
   console.log('CONVERTING TO 8BIT');
   ij.runMacro('run("8-bit");');
   return JSON.stringify({status: 'success'});
 }
 
-function save_image_as(n) {
+async function save_image_as(n) {
+  let get_image = await cjResolveCall("ij.WindowManager", "getCurrentImage");
+  let in_proc = await get_image()
+  while (in_proc.locked9 === 1) {
+    console.log('waiting for bandpass to finish');
+    in_proc = await get_image()
+  }
   console.log('SAVING IMAGE');
   get_image_n(n);
   return JSON.stringify({status: 'success'});
@@ -320,6 +366,11 @@ const CustomWebView = ({
     await send_LoadImage();
   };
 
+  const receive_print = async (data: any) => {
+    console.log('receive_print');
+    console.log('data: ', data);
+  };
+
   const send_LoadImage = async () => {
     console.log('send_LoadImage');
     let image_b64 = await image_at_path_to_b64(`${source_image_path}`);
@@ -331,9 +382,40 @@ const CustomWebView = ({
   const receive_LoadImage = async (data: any) => {
     console.log('receive_LoadImage');
     console.log('data: ', data);
+    // await send_ApplyBandpassFilter();
+    // await send_EqualizeHistogram();
     await send_ConvertImageTo8Bit();
   };
-
+  const send_ApplyBandpassFilter = async () => {
+    console.log('send_ApplyBandpassFilter');
+    webviewRef.current?.postMessage(
+      JSON.stringify({
+        fn_name: 'apply_bandpass_filter',
+        args: `[${particleCountParams.global_lower_bandpass}, ${particleCountParams.global_upper_bandpass}]`,
+      }),
+    );
+  };
+  const receive_ApplyBandpassFilter = async (data: any) => {
+    console.log('receive_ApplyBandpassFilter');
+    console.log('data: ', data);
+    // await send_EqualizeHistogram();
+    // await send_ConvertImageTo8Bit();
+    // await send_EqualizeHistogram();
+    await send_SaveImageAs('1.png');
+  };
+  const send_EqualizeHistogram = async () => {
+    console.log('send_EqualizeHistogram');
+    webviewRef.current?.postMessage(
+      JSON.stringify({fn_name: 'equalize_histogram', args: ''}),
+    );
+  };
+  const receive_EqualizeHistogram = async (data: any) => {
+    console.log('receive_EqualizeHistogram');
+    console.log('data: ', data);
+    // await send_ConvertImageTo8Bit();
+    // await send_ApplyBandpassFilter();
+    // await send_SaveImageAs('1.png');
+  };
   const send_ConvertImageTo8Bit = async () => {
     console.log('send_ConvertImageTo8Bit');
     webviewRef.current?.postMessage(
@@ -344,7 +426,10 @@ const CustomWebView = ({
   const receive_ConvertImageTo8Bit = async (data: any) => {
     console.log('receive_ConvertImageTo8Bit');
     console.log('data: ', data);
-    await send_SaveImageAs('1.png');
+    // sleep for 1s for bandpass to finish
+    // await new Promise(r => setTimeout(r, 2000));
+    // await send_SaveImageAs('1.png');
+    await send_ApplyBandpassFilter();
   };
 
   const send_SaveImageAs = async (save_filename: string) => {
@@ -574,6 +659,10 @@ const CustomWebView = ({
         await receive_InitIJ(args);
       } else if (fn_name === 'load_image_from_b64') {
         await receive_LoadImage(args);
+      } else if (fn_name === 'apply_bandpass_filter') {
+        await receive_ApplyBandpassFilter(args);
+      } else if (fn_name === 'equalize_histogram') {
+        await receive_EqualizeHistogram(args);
       } else if (fn_name === 'convert_image_to_8bit') {
         await receive_ConvertImageTo8Bit(args);
       } else if (fn_name === 'save_image_as') {
@@ -592,6 +681,8 @@ const CustomWebView = ({
         await receive_AnalyzeParticles(args);
       } else if (fn_name === 'get_particle_count_final') {
         await receive_GetParticleCount(args);
+      } else if (fn_name === 'print') {
+        await receive_print(args);
       } else {
         console.log('invalid fn_name received from webview');
       }
