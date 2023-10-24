@@ -22,6 +22,7 @@ export type Routes = {
   ScanViewer: ImageData;
   ScanListItem: undefined;
   ImagePicker: undefined;
+  Microscope: undefined;
   // ScanListItem: {
   //   thumbnail: string;
   //   metadata: any;

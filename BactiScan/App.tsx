@@ -41,6 +41,7 @@ import GalleryPage from './views/gallery_page/GalleryPage';
 import {verticalAnimation} from './views/CommonStyles';
 import {Routes} from './views/Routes';
 import ScanViewer from './views/scan_viewer/ScanViewer';
+import MicroscopePage from "./views/microscope_page/MicroscopePage";
 
 // const fs = require('fs-extra')
 const Stack = createStackNavigator<Routes>();
@@ -131,6 +132,7 @@ function App(): JSX.Element {
           />
           <Stack.Screen name="MediaPage" component={MediaPage} />
           <Stack.Screen name="ScanViewer" component={ScanViewer} />
+          <Stack.Screen name="Microscope" component={MicroscopePage} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppContext.Provider>

@@ -84,6 +84,10 @@ const HomePage = () => {
       // setFilePath(response);
     });
   };
+  const goToMicroscope = () => {
+    console.log('goToMicroscope');
+    navigation.navigate('Microscope');
+  };
 
   const chooseFile = async (type: string) => {
     let options = {
@@ -152,13 +156,17 @@ const HomePage = () => {
             thumbnail: {uri: `${imageDir.path}/${metadata.path}`},
             metadata: {
               // title: `Scan ${metadata.timestamp}`,
-              title: metadata.title ? metadata.title : `Scan ${metadata.timestamp}`,
+              title: metadata.title
+                ? metadata.title
+                : `Scan ${metadata.timestamp}`,
               // Get date from timestamp
               date: new Date(metadata.timestamp).toLocaleDateString(),
               // Get time from timestamp
               time: new Date(metadata.timestamp).toLocaleTimeString(),
               id: metadata.timestamp,
-              particle_count: metadata.particle_count ? metadata.particle_count : 'Unknown'
+              particle_count: metadata.particle_count
+                ? metadata.particle_count
+                : 'Unknown',
             },
           };
           return img_data;
@@ -205,7 +213,7 @@ const HomePage = () => {
         {/*  onPress={goToSettings}>*/}
         {/*  <IonIcon name="settings-outline" size={32} />*/}
         {/*</TouchableOpacity>*/}
-        <View style={{...commonStyles.iconButton, width: 32, height:32}}></View>
+        <View style={{...commonStyles.iconButton, width: 32, height: 32}} />
         <Text style={commonStyles.title}>BactiScan</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToSearch}>
           <IonIcon name="search-outline" size={32} />
@@ -213,19 +221,17 @@ const HomePage = () => {
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        {
-          scanItems.scanData.length === 0 && (
-            <View style={{
+        {scanItems.scanData.length === 0 && (
+          <View
+            style={{
               display: 'flex',
               justifyContent: 'center',
               paddingTop: 50,
               alignItems: 'center',
-
             }}>
-              <Text style={{color:'#888888'}}>Added scans will appear here</Text>
-            </View>
-          )
-        }
+            <Text style={{color: '#888888'}}>Added scans will appear here</Text>
+          </View>
+        )}
         <ScanList data={scanItems.scanData} />
 
         {/*<CustomWebView />*/}
@@ -246,6 +252,17 @@ const HomePage = () => {
               onPress={() => chooseFile('photo')}>
               <IonIcon
                 name="image-outline"
+                size={32}
+                style={{paddingRight: 10}}
+              />
+            </TouchableOpacity>
+            <View style={commonStyles.separator} />
+            <TouchableOpacity
+              style={commonStyles.iconButton}
+              // onPress={goToGallery}>
+              onPress={() => goToMicroscope()}>
+              <IonIcon
+                name="scan-circle-outline"
                 size={32}
                 style={{paddingRight: 10}}
               />
