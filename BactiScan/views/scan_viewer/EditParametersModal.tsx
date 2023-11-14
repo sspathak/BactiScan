@@ -42,7 +42,7 @@ const EditParametersModal = ({
   const upperParticle = useRef(null);
   const lowerBandpass = useRef(null);
   const upperBandpass = useRef(null);
-  const particleCountParams = useContext(AppContext);
+  const particleCountParams = useContext(AppContext)['particleCount'];
   const handleInputSubmit = nextInputRef => {
     if (nextInputRef && nextInputRef.current) {
       nextInputRef.current.focus();

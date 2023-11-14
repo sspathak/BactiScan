@@ -13,30 +13,40 @@ import CustomWebView from '../imagej_webview/CustomWebView';
 // import captureImage from '../gallery_page/ImagePicker';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import AppContext from '../AppContext';
+import { BACTISCAN_ROOT, DEFAULT_FOLDER_NAME } from '../../Constants';
 type Props = NavigationProp<Routes, 'Home'>;
-
 const HomePage = () => {
   const navigation = useNavigation<Props>();
   const [scanData, setScanData] = useState([]);
-  const scanItems = useContext(AppContext);
-  scanItems.scanData = scanData;
-  scanItems.setScanData = setScanData;
-  const isFocused = useIsFocused();
+  const appCtx = useContext(AppContext);
+  console.log("appCtx: ", appCtx)
+  const [selectedFolderName, setSelectedFolderName] = appCtx['folderSelect'];
 
+  appCtx.scanData = scanData;
+  appCtx.setScanData = setScanData;
+  
+  // if (!appCtx.selectedFolderName) {
+  //   console.log("setting selectedFolderName to " + DEFAULT_FOLDER_NAME)
+  //   appCtx.selectedFolderName = selectedFolderName;
+  //   appCtx.setSelectedFolderName = setSelectedFolderName;
+  // }
+  
+  const isFocused = useIsFocused();
   useEffect(() => {
     if (isFocused) {
-      loadSavedData()
+      console.log("USEEFFECT loading saved data from : ", selectedFolderName, "...")
+      loadSavedData(selectedFolderName)
         .then(r => console.log('loadSavedData result:', r))
         .catch(e => console.log('loadSavedData error:', e));
     }
-  }, [isFocused]);
-
-  // RNFS.writeFile(
-  //   `${RNFS.DocumentDirectoryPath}/test.txt`,
-  //   'Lorem ipsum dolor sit amet',
-  //   'utf8',
-  // ).then(r => console.log('writeFile result:', r));
-
+  }, [isFocused, selectedFolderName]);
+  // useEffect(() => {
+  //   console.log("USEEFFECT loading saved data from : ", appCtx.selectedFolderName, "...")
+  //   loadSavedData(appCtx.selectedFolderName)
+  //     .then(r => console.log('loadSavedData result:', r))
+  //     .catch(e => console.log('loadSavedData error:', e));
+    
+  // }, [appCtx.selectedFolderName]);
   const captureImage = async type => {
     let options = {
       mediaType: type,
@@ -55,7 +65,6 @@ const HomePage = () => {
       }
       let response = _response.assets[0];
       console.log('Response = ', response);
-
       if (response.didCancel) {
         console.warn('User cancelled camera picker');
         return;
@@ -80,15 +89,17 @@ const HomePage = () => {
       navigation.navigate('MediaPage', {
         path: path,
         type: type,
+        destination_folder: selectedFolderName,
       });
       // setFilePath(response);
     });
   };
   const goToMicroscope = () => {
     console.log('goToMicroscope');
-    navigation.navigate('Microscope');
+    navigation.navigate('Microscope', {
+      destination_folder: selectedFolderName,
+    });
   };
-
   const chooseFile = async (type: string) => {
     let options = {
       mediaType: type,
@@ -102,7 +113,6 @@ const HomePage = () => {
       }
       let response = _response.assets[0];
       console.log('Response = ', response);
-
       if (response.didCancel) {
         console.warn('User cancelled camera picker');
         return;
@@ -120,20 +130,21 @@ const HomePage = () => {
       console.log('uri -> ', response.uri);
       console.log('width -> ', response.width);
       let path = response.uri.replace('file://', '');
-
       navigation.navigate('MediaPage', {
         path: path,
         type: type,
+        destination_folder: selectedFolderName,
       });
       // setFilePath(response);
     });
   };
 
-  const loadSavedData = async () => {
+  // input is the absolute path to the folder containing the images
+  const loadSavedData = async (folder_name: string = 'images') => {
+    const folder_path = `${BACTISCAN_ROOT}/${folder_name}`;
     try {
-      const imagesDirPath = 'images';
       const imageDirs = await RNFS.readDir(
-        `${RNFS.DocumentDirectoryPath}/${imagesDirPath}`,
+        folder_path,
       );
       // sort by path string
       imageDirs.sort((a, b) => {
@@ -145,7 +156,6 @@ const HomePage = () => {
         }
         return 0;
       });
-
       const newData = await Promise.all(
         imageDirs.map(async imageDir => {
           console.log(`imageDir.path: ${imageDir.path}`);
@@ -170,58 +180,60 @@ const HomePage = () => {
             },
           };
           return img_data;
-          // return {
-          //   thumbnail: {uri: `${imageDir.path}/${metadata.path}`},
-          //   metadata: {
-          //     title: `Scan ${metadata.timestamp}`,
-          //     date: '2021-11-01',
-          //     time: '12:00',
-          //     id: `${metadata.timestamp}`,
-          //   },
-          // };
         }),
       );
       console.log('newData:', newData);
-      scanItems.setScanData(newData);
+      appCtx.setScanData(newData);
+      console.log("DONE running loadSavedData")
       // setScanData(newData);
     } catch (error) {
       console.log('Failed to load saved data:', error);
     }
   };
-
   const goToSettings = () => {
     navigation.navigate('Settings');
   };
-
   const goToSearch = () => {
     navigation.navigate('Search');
   };
-
   const goToCamera = () => {
     navigation.navigate('Camera');
   };
-
   const goToGallery = () => {
     navigation.navigate('Gallery');
   };
-
+  const goToFolders = () => {
+    navigation.navigate('FoldersPage');
+  }
+  const test_toggle_folder = () => { // this function is for testing and debugging purposes only
+    console.log("test_toggle_folder called")
+    console.log("appCTX in test_toggle_folder: ", appCtx)
+    if (selectedFolderName === 'Collection1') {
+      console.log("setting selectedFolderName to images")
+      setSelectedFolderName('images');
+    } else {
+      setSelectedFolderName('Collection1');
+    }
+    console.log("final selectedFolderName: ", selectedFolderName)
+  }
   return (
     <View style={commonStyles.container}>
       <View style={commonStyles.header}>
-        {/*<TouchableOpacity*/}
-        {/*  style={{...commonStyles.iconButton}}*/}
-        {/*  onPress={goToSettings}>*/}
-        {/*  <IonIcon name="settings-outline" size={32} />*/}
-        {/*</TouchableOpacity>*/}
-        <View style={{...commonStyles.iconButton, width: 32, height: 32}} />
-        <Text style={commonStyles.title}>BactiScan</Text>
+        <TouchableOpacity
+          style={{...commonStyles.iconButton}}
+          onPress={goToFolders}>
+          <IonIcon name="folder-outline" size={32} />
+        </TouchableOpacity>
+        {/* <View style={{...commonStyles.iconButton, width: 32, height: 32}} /> */}
+        {/* <Text style={commonStyles.title}>BactiScan</Text> */}
+        <Text style={commonStyles.title}>{selectedFolderName}</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToSearch}>
           <IonIcon name="search-outline" size={32} />
         </TouchableOpacity>
       </View>
       <View style={commonStyles.content}>
         {/* Render the list of scan items here */}
-        {scanItems.scanData.length === 0 && (
+        {appCtx.scanData.length === 0 && (
           <View
             style={{
               display: 'flex',
@@ -232,8 +244,7 @@ const HomePage = () => {
             <Text style={{color: '#888888'}}>Added scans will appear here</Text>
           </View>
         )}
-        <ScanList data={scanItems.scanData} />
-
+        <ScanList data={appCtx.scanData} />
         {/*<CustomWebView />*/}
       </View>
       <View style={commonStyles.bottomBar}>
@@ -273,5 +284,8 @@ const HomePage = () => {
     </View>
   );
 };
+
+
+
 
 export default HomePage;

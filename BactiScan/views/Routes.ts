@@ -12,6 +12,7 @@ export type Routes = {
   MediaPage: {
     path: string;
     type: 'video' | 'photo';
+    destination_folder?: string;
   };
   Home: undefined;
   Settings: undefined;
@@ -22,7 +23,10 @@ export type Routes = {
   ScanViewer: ImageData;
   ScanListItem: undefined;
   ImagePicker: undefined;
-  Microscope: undefined;
+  Microscope: {
+    destination_folder?: string;
+  };
+  FoldersPage: undefined;
   // ScanListItem: {
   //   thumbnail: string;
   //   metadata: any;

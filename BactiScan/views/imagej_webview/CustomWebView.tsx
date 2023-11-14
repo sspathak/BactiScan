@@ -348,7 +348,7 @@ const CustomWebView = ({
   console.log('source_image_path: ', source_image_path);
   const webviewRef = useRef<WebView | null>(null);
   const [IJLoaded, setIJLoaded] = useState(false);
-  const particleCountParams = useContext(AppContext);
+  const particleCountParams = useContext(AppContext)['particleCount'];
   console.log(
     `using params: ${particleCountParams.global_lower_threshold}, ${particleCountParams.global_upper_threshold}, ${particleCountParams.global_lower_size}, ${particleCountParams.global_upper_size}`,
   );

@@ -42,6 +42,8 @@ import {verticalAnimation} from './views/CommonStyles';
 import {Routes} from './views/Routes';
 import ScanViewer from './views/scan_viewer/ScanViewer';
 import MicroscopePage from "./views/microscope_page/MicroscopePage";
+import { DEFAULT_FOLDER_NAME } from './Constants';
+import FoldersPage from './views/folders_page/FoldersPage';
 
 // const fs = require('fs-extra')
 const Stack = createStackNavigator<Routes>();
@@ -101,10 +103,12 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [selectedFolderName, setSelectedFolderName] = useState(DEFAULT_FOLDER_NAME);
+
   // const navigation = useNavigation();
 
   return (
-    <AppContext.Provider value={particle_count_params}>
+    <AppContext.Provider value={{particleCount: particle_count_params, folderSelect: [selectedFolderName, setSelectedFolderName]}}>
       <NavigationContainer>
         <StatusBar barStyle={'dark-content'} translucent={true} />
         <Stack.Navigator
@@ -133,6 +137,7 @@ function App(): JSX.Element {
           <Stack.Screen name="MediaPage" component={MediaPage} />
           <Stack.Screen name="ScanViewer" component={ScanViewer} />
           <Stack.Screen name="Microscope" component={MicroscopePage} />
+          <Stack.Screen name='FoldersPage' component={FoldersPage} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppContext.Provider>

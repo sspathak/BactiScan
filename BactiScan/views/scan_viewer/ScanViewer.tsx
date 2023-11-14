@@ -36,7 +36,10 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
   const [visible, setIsVisible] = useState(false);
   const [viewing_image, setViewingImage] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const particleCountParams = useContext(AppContext);
+  const appCtx = useContext(AppContext);
+  console.log('appCtx in scanviewer', appCtx);
+  const particleCountParams = appCtx['particleCount'];
+  console.log('particleCountParams in scanviewer', particleCountParams);
 
   const goBack = () => {
     navigation.goBack();
@@ -276,12 +279,12 @@ export function ScanViewer({navigation, route}: Props): React.ReactElement {
             <EditParametersModal
               modalVisible={modalVisible}
               setModalVisible={setModalVisible}
-              setLowerThreshold={particleCountParams.setGlobalLowerThreshold}
-              setUpperThreshold={particleCountParams.setGlobalUpperThreshold}
-              setLowerParticleSize={particleCountParams.setGlobalLowerSize}
-              setUpperParticleSize={particleCountParams.setGlobalUpperSize}
-              setLowerBandpass={particleCountParams.setGlobalLowerBandpass}
-              setUpperBandpass={particleCountParams.setGlobalUpperBandpass}
+              setLowerThreshold={particleCountParams['setGlobalLowerThreshold']}
+              setUpperThreshold={particleCountParams['setGlobalUpperThreshold']}
+              setLowerParticleSize={particleCountParams['setGlobalLowerSize']}
+              setUpperParticleSize={particleCountParams['setGlobalUpperSize']}
+              setLowerBandpass={particleCountParams['setGlobalLowerBandpass']}
+              setUpperBandpass={particleCountParams['setGlobalUpperBandpass']}
               setResultsReady={setResultsReady}
               // lower_threshold={particleCountParams.global_lower_threshold}
               // upper_threshold={particleCountParams.global_upper_threshold}

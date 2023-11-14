@@ -21,6 +21,7 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {Routes} from '../Routes';
 import {useIsFocused} from '@react-navigation/core';
 import RNFS from 'react-native-fs';
+import {BACTISCAN_ROOT, DEFAULT_FOLDER_NAME} from '../../Constants';
 
 
 const requestSavePermission = async (): Promise<boolean> => {
@@ -48,7 +49,8 @@ const isVideoOnLoadEvent = (
 
 type Props = NativeStackScreenProps<Routes, 'MediaPage'>;
 export function MediaPage({navigation, route}: Props): React.ReactElement {
-  const {path, type} = route.params;
+  // destination folder is the path after rnfs document directory path. no slashes
+  const {path, type, destination_folder} = route.params;
   const [hasMediaLoaded, setHasMediaLoaded] = useState(false);
   const isForeground = useIsForeground();
   const isScreenFocused = useIsFocused();
@@ -121,21 +123,22 @@ export function MediaPage({navigation, route}: Props): React.ReactElement {
   const acceptHome = async () => {
     try {
       // Create a unique directory for each image
-      const imageDirPath = `images/${Date.now()}`;
+      const imageDirPath = `${destination_folder ? destination_folder : DEFAULT_FOLDER_NAME}/${Date.now()}`;
+      const SAVE_DIR = `${BACTISCAN_ROOT}/${imageDirPath}`;
       console.log(
-        'creating directory ' + `${RNFS.DocumentDirectoryPath}/${imageDirPath}`,
+        'creating directory ' + `${SAVE_DIR}`,
       );
-      await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${imageDirPath}`);
+      await RNFS.mkdir(`${SAVE_DIR}`);
 
       // Save the image to the directory
       const imagePath = 'image.jpg';
       console.log(
         'path: ',
-        `${RNFS.DocumentDirectoryPath}/${imageDirPath}/${imagePath}`,
+        `${SAVE_DIR}/${imagePath}`,
       );
       await RNFS.moveFile(
         path,
-        `${RNFS.DocumentDirectoryPath}/${imageDirPath}/${imagePath}`,
+        `${SAVE_DIR}/${imagePath}`,
       );
 
       // Save the metadata to a separate file
@@ -145,10 +148,15 @@ export function MediaPage({navigation, route}: Props): React.ReactElement {
         type: type,
         timestamp: Date.now(),
       });
-      await RNFS.writeFile(`${RNFS.DocumentDirectoryPath}/${metadataPath}`, metadata);
+      await RNFS.writeFile(`${SAVE_DIR}/metadata.json`, metadata);
+      if(
+        `${SAVE_DIR}/metadata.json` !== `${BACTISCAN_ROOT}/${metadataPath}`
+      ) {
+        console.log("FATAL ERROR WITH REFACTOR")
+      }
       console.log(
         'Saved metadata to',
-        `${RNFS.DocumentDirectoryPath}/${metadataPath}`,
+        `${SAVE_DIR}/metadata.json`,
       );
       // Navigate to the home page
       navigation.navigate('Home');
