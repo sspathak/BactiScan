@@ -226,7 +226,7 @@ const HomePage = () => {
         </TouchableOpacity>
         {/* <View style={{...commonStyles.iconButton, width: 32, height: 32}} /> */}
         {/* <Text style={commonStyles.title}>BactiScan</Text> */}
-        <Text style={commonStyles.title}>{selectedFolderName}</Text>
+        <Text style={commonStyles.title}>{selectedFolderName === 'images' ? 'Home' : selectedFolderName}</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToSearch}>
           <IonIcon name="search-outline" size={32} />
         </TouchableOpacity>
@@ -241,7 +241,7 @@ const HomePage = () => {
               paddingTop: 50,
               alignItems: 'center',
             }}>
-            <Text style={{color: '#888888'}}>Added scans will appear here</Text>
+            <Text style={{color: '#888888'}}>{selectedFolderName==='images'? 'Added scans will appear here' : `folder '${selectedFolderName}' is empty`}</Text>
           </View>
         )}
         <ScanList data={appCtx.scanData} />

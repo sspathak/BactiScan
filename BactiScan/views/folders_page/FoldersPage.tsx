@@ -62,17 +62,17 @@ const FoldersPage = () => {
       const folderList = await getFolderList();
       console.log("_FOLDER LIST IN USE EFFECT IS: ", folderList)
       // sort folder list by name
-      const _fl = folderList.sort((a, b) => {
-        if (a > b) {
-          return -1;
-        }
-        if (a < b) {
-          return 1;
-        }
-      })
-      console.log("FOLDER LIST BEFORE SETTING HOOK IS: ", _fl)
+      // const _fl = folderList.sort((a, b) => {
+      //   if (a > b) {
+      //     return -1;
+      //   }
+      //   if (a < b) {
+      //     return 1;
+      //   }
+      // })
+      console.log("FOLDER LIST BEFORE SETTING HOOK IS: ", folderList)
       // reverse the filder list so that it starts with A and ends with z
-      const fl = _fl.reverse();
+      const fl = folderList.reverse();
       setFolderListHook(fl);
     };
     fetchFolderList();
@@ -94,23 +94,19 @@ const FoldersPage = () => {
       //   onPress={() => goToFolder(item)}>
       //   <Text style={styles.title}>{item}</Text>
       // </TouchableOpacity>
-      <View style={styles.container}>
-      <TouchableOpacity
-        // style={commonStyles.iconButton}
-        style={styles.touchableContainer}
-        // on press it should load scan viewer with the thumbnail path of the scan list item that was clicked
-        onPress={() => goToFolder(item)}>
-        {/* <Image source={thumbnail} style={styles.thumbnail} />  */}
-        <IonIcon name="folder-outline" size={32}/>
-        <View style={styles.metadataContainer}>
-          <Text style={styles.title}>{item}</Text>
-          {/* <Text style={styles.date}>{metadata.date}</Text> */}
-          {/* <Text style={styles.date}>{metadata.time}</Text> */}
-          {/* <Text style={styles.particleCount}>{ 'Count: ' + (metadata.particle_count ? metadata.particle_count : 'Unknown') }</Text> */}
-          {/*<Text*/}
-          {/* // Add other metadata fields as needed */}
-        </View>
-      </TouchableOpacity>
+      <View style={{...styles.container, 
+      }}>
+        <TouchableOpacity
+          style={styles.touchableContainer}
+          // on press it should load scan viewer with the thumbnail path of the scan list item that was clicked
+          onPress={() => goToFolder(item)}>
+          <IonIcon name="folder-outline" size={32}/>
+          <View style={{...styles.metadataContainer
+          }}>
+            <Text style={{...styles.title}}>{item === 'images'? 'Home' : item}</Text>
+          </View>
+
+        </TouchableOpacity>
       </View>
 
     );
@@ -161,6 +157,13 @@ const FoldersPage = () => {
         return 1;
       }
     })
+    // move 'images' folder from list to end of list
+    const imagesIndex = filteredFolders3.indexOf('images');
+    if (imagesIndex !== -1) {
+      filteredFolders3.splice(imagesIndex, 1);
+      filteredFolders3.push('images');
+    }
+
     return filteredFolders3;
   }
   
@@ -225,7 +228,7 @@ const FoldersPage = () => {
         {/* <View style={{...commonStyles.iconButton, width: 32, height: 32}} /> */}
         <Text style={commonStyles.title}>Folders</Text>
         <TouchableOpacity style={commonStyles.iconButton} onPress={goToHome}>
-          <IonIcon name="home-outline" size={32} />
+          <IonIcon name="chevron-forward-outline" size={32} />
         </TouchableOpacity>
         {/* <Text style={commonStyles.title}>{selectedFolderName}</Text> */}
           {/* <View

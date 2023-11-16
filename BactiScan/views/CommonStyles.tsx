@@ -53,6 +53,29 @@ export const verticalAnimation: StackNavigationOptions = {
   },
 };
 
+export const leftToRightAnimation: StackNavigationOptions = {
+  gestureDirection: 'horizontal',
+  transitionSpec: {
+    open: TransitionSpecs.TransitionIOSSpec,
+    close: TransitionSpecs.TransitionIOSSpec,
+  },
+  headerStyleInterpolator: HeaderStyleInterpolators.forFade,
+  cardStyleInterpolator: ({current, layouts}: StackCardInterpolationProps) => {
+    return {
+      cardStyle: {
+        transform: [
+          {
+            translateX: current.progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-layouts.screen.width, 0],
+            }),
+          },
+        ],
+      },
+    };
+  },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

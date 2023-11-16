@@ -38,7 +38,7 @@ import MediaPage from './views/camera_page/MediaPage';
 import CameraPage from './views/camera_page/CameraPage';
 import ImagePicker from './views/gallery_page/ImagePicker';
 import GalleryPage from './views/gallery_page/GalleryPage';
-import {verticalAnimation} from './views/CommonStyles';
+import {verticalAnimation, leftToRightAnimation} from './views/CommonStyles';
 import {Routes} from './views/Routes';
 import ScanViewer from './views/scan_viewer/ScanViewer';
 import MicroscopePage from "./views/microscope_page/MicroscopePage";
@@ -137,7 +137,8 @@ function App(): JSX.Element {
           <Stack.Screen name="MediaPage" component={MediaPage} />
           <Stack.Screen name="ScanViewer" component={ScanViewer} />
           <Stack.Screen name="Microscope" component={MicroscopePage} />
-          <Stack.Screen name='FoldersPage' component={FoldersPage} />
+          <Stack.Screen name='FoldersPage' component={FoldersPage} options={leftToRightAnimation}/>
+          
         </Stack.Navigator>
       </NavigationContainer>
     </AppContext.Provider>

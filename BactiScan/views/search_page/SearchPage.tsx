@@ -7,6 +7,7 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import AppContext from "../AppContext";
 import {useIsFocused} from "@react-navigation/core";
 import RNFS from "react-native-fs";
+import { BACTISCAN_ROOT } from '../../Constants';
 
 type RootStackParamList = {
   Home: undefined;
@@ -23,9 +24,10 @@ const SearchPage = () => {
   const [searchString, setSearchString] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const isFocused = useIsFocused();
+  const appCtx = useContext(AppContext);
   const loadSavedData = async () => {
     try {
-      const imagesDirPath = 'images';
+      const imagesDirPath = `${BACTISCAN_ROOT}/${appCtx['selectedFolderName']}`;
       const imageDirs = await RNFS.readDir(
         `${RNFS.DocumentDirectoryPath}/${imagesDirPath}`,
       );
